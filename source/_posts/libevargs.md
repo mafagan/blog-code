@@ -1,10 +1,13 @@
-title: liev回调函数的参数传递问题
-tags: libev
+title: libev回调函数的参数传递问题
+tags: 
+- libev
+- callback
+
 dategory: coding
 date: 2015-01-15 18:29
 ---
 libev是一个类似于libevent的事件驱动型的网络库，之前用它来做项目的时候对它由很高的期望，谁知一上手就遇到了挺无语的问题，先来看下libev的官方示例：
-
+<!-- more -->
 ###Libev调用示例
 首先定义一个I/O变量：
 ``` c

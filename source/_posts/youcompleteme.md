@@ -7,10 +7,9 @@ YouCompleteMe(以下简称YCM), 目前vim上最优秀的补全插件。
 
 ###简介
 vim上有很多补全插件，像ctags, cscope, neocomplete等。这些插件或多或少我都用过，总体感觉就是在瞎XX猜。相比之下，YCM与这些插件有着本质的区别，它基于语法分析，补全精准快速，即使是在百兆源码文件中使用也不会有显著的的效率下降，支持C家族全系语言，亲测还支持python、js等，可以说很大程度上解决了vim补全上的问题。
-
+<!-- more -->
 YCM由谷歌工程师Strahinja Val Markovic开发,使用的是C/S架构，在vim启动的时候服务端就会自动运行，正常情况下是感受不到YCM的存在的。YCM的语义分析使用的是clang(就是mac上的默认编译器)，C端使用C++开发，据说是为了提高效率，再由python进行封装，是不是觉得有点晕菜？没关系，其实你只要记住YCM很好用就行了。附一张效果图，btw，YCM还有补全路径、跳转到定义声明这些貌似不太起眼但是非常实用的功能，用起来感觉各种惊喜。
-
-![ycm-demo](http://zuyunfei.com/images/ycm-demo.gif)
+![ycm-demo](http://ccxcu.img43.wal8.com/img43/507748_20150118041318/142245596241.gif)
 
 ###mac下的安装
 YCM的语义分析用的是clang，因此在YCM在mac的安装也是最简单直接的。
@@ -48,8 +47,7 @@ YCM的默认配置文件是在.vim文件夹中的.ycm_extra_conf.py,在项目根
 ###后记
 之前一直觉得YouCompleteMe这句话有点耳熟，直到前几天一不小心在Acfun上看到，终于知道是神马回事了。
 
-![joker](http://ww1.sinaimg.cn/large/005yyi5Jjw1enza2olfbbj31400p0wjr.jpg
-)
+![joker](http://ccxcu.img43.wal8.com/img43/507748_20150118041318/142245596287.jpg)
 
 
 

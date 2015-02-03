@@ -1,7 +1,7 @@
 title: Article test
 category: article
 tags: article
-date: 2014-12-24 19:37
+date: 2014-12-24 19:38
 ---
 
 # Mou
@@ -25,7 +25,7 @@ Like, seriously, a _LOT_ of text**
 #### Blockquotes
 
 > Right angle brackets &gt; are used for block quotes.
-
+<!-- more -->
 #### Links and Email
 
 An email <example@example.com> link.

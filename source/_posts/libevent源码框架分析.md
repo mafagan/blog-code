@@ -1,9 +1,10 @@
-title: Libevent主体框架分析
+title: Libevent源码框架分析
 tags: [libevent, unix, signal, ]  
 date: 2014-12-26 10:25
 category: coding
 ---
 libevent是一个事件触发(**Reactor**)的网络库，适用于windows、linux、bsd等多种平台，内部使用select、epoll、kqueue等系统调用管理事件机制。与其它网络库相比，libevent最大的特点就是很好的整合了I/O、timer以及signal的处理。之前我曾经在实习项目中用到过libevent，由于当时对整个libevent的运行方式不太熟悉，导致设计程序框架的时候多了很多不必要的考虑和编码，所以就在这里对libevent的核心部分进行一次剖析。
+<!-- more -->
 ##libevent的使用
 对于libevent来说，I/O, timer以及signal都是一个event，其内部已经封装好了对这些事件的处理，因此用户调用的时候只需要注册关心的事件以及事件的处理函数(即回调函数),然后等待事件的即可。问题的关键是libevent是怎么整合这些事件的？下面我来解释一下。
 
