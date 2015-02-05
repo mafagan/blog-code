@@ -87,3 +87,11 @@ exclude_generator:
 ## Docs: http://hexo.io/docs/deployment.html
 deploy:
   type:
+
+plugins:
+- hexo-generator-sitemap
+
+widgets:
+- category
+- tagcloud
+
