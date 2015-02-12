@@ -4,11 +4,11 @@
 
 # Site
 title: 坚强的鸡蛋
-subtitle:
-description:
+subtitle: Collect the dots in your life.
+description: 蛋爷的博客，攻城狮的窝，优雅的外在，科学的内心，互联网中的水吧，这里有一只坚强的鸡蛋！
 author: Huaguan, Ma
 email: mahuaguan@126.com
-language:
+language: zh-CN
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
@@ -90,8 +90,9 @@ deploy:
 
 plugins:
 - hexo-generator-sitemap
+- hexo-generator-feed
 
-widgets:
-- category
-- tagcloud
-
+feed:
+  type: atom
+  path: atom.xml
+  limit: 20
