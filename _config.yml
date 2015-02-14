@@ -85,12 +85,10 @@ exclude_generator:
 
 # Deployment
 ## Docs: http://hexo.io/docs/deployment.html
-deploy:
-  type:
-
 plugins:
 - hexo-generator-sitemap
 - hexo-generator-feed
+- hexo-deployer-ftp
 
 feed:
   type: atom
