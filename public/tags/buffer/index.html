@@ -1,0 +1,231 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>buffer | 坚强的鸡蛋</title>
+  <meta name="author" content="Huaguan, Ma">
+  
+  <meta name="description" content="蛋爷的博客，攻城狮的窝，优雅的外在，科学的内心，互联网中的水吧，这里有一只坚强的鸡蛋！">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+  <meta property="og:site_name" content="坚强的鸡蛋"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="坚强的鸡蛋" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">坚强的鸡蛋</a></h1>
+  <h2><a href="/">Collect the dots in your life.</a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">首页</a></li>
+    
+      <li><a href="/archives">归档</a></li>
+    
+      <li><a href="/about">关于</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div></header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper">
+<h2 class="archive-title tag">buffer</h2>
+
+
+  
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-02-13T13:37:00.000Z"><a href="/2015/02/13/linux-udp-buffer/">2月 13 2015</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2015/02/13/linux-udp-buffer/">linux中udp缓冲区大小的查看与设置</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>鉴于tcp有重传机制，更多的时候udp对收发缓冲区的大小可能更加敏感一点。</p>
+<p>udp缓冲区的大小主要和以下几个值有关：</p>
+<ol>
+<li>/proc/sys/net/core/rmem_max ——— udp缓冲区的最大值，单位字节，下同</li>
+<li>/proc/sys/net/core/rmem_default ———- udp缓冲区的默认值，如果不更改的话程序的udp缓冲区默认值就是这个。</li>
+</ol>
+<p>查看方法可以直接<code>cat</code>以上两个文件进行查看，也可以通过<code>sysctl</code>查看。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sysctl <span class="operator">-a</span> | grep rmem_max</div></pre></td></tr></table></figure>
+
+<p>其实sysctl信息来源就是<code>proc</code>下的文件。</p>
+<h2 id="更改udp缓冲区大小">更改udp缓冲区大小</h2>
+<h3 id="程序中进行更改">程序中进行更改</h3>
+<p>程序中可以使用setsockopt函数与SO_RCVBUF选项对udp缓冲区的值进行更改，但是要注意不管设置的值有多大，超过rmem_max的部分都会被无视。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">int a = value_wanted;</div><div class="line"><span class="keyword">if</span> (setsockopt(sockfd, SOL_SOCKET, SO_RCVBUF, &a, sizeof(int)) == -<span class="number">1</span>) {</div><div class="line">    <span class="keyword">...</span></div><div class="line">}</div></pre></td></tr></table></figure>
+
+<h3 id="更改系统值">更改系统值</h3>
+<p>如果确实要把udp缓冲区改到一个比较大的值，那就需要更改rmem_max的值。<br>编辑/etc/rc.local文件添加以下代码可使系统在每次启动的时候自动更改系统缓冲区的最大值。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">echo value_wanted &gt; /<span class="keyword">proc</span>/sys/net/core/rmem_default</div></pre></td></tr></table></figure>
+
+<p>或者在/etc/sysctl.conf添加以下代码即可在重启后永久生效。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="attribute">rmem_max</span>=<span class="string">MAX</span></div></pre></td></tr></table></figure>
+
+<p>不想重启的话使用命令<code>sysctl -p</code>即可。</p>
+<p>可以顺便看下setsockopt在linux下的相关实现</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">...</span></div><div class="line"></div><div class="line">case SO_SNDBUF:</div><div class="line">    <span class="keyword">if</span> (val &gt; sysctl_wmem_max)</div><div class="line">        val = sysctl_wmem_max;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> ((val * <span class="number">2</span>) &lt; SOCK_MIN_SNDBUF)</div><div class="line">        sk-&gt;sk_sndbuf = SOCK_MIN_SNDBUF;</div><div class="line">    <span class="keyword">else</span></div><div class="line">        sk-&gt;sk_sndbuf = val * <span class="number">2</span>; //当然缓冲区在系统中的实际值要大一点，因为udp报头以及IP报头等都是需要空间的。</div><div class="line"><span class="keyword">...</span></div></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  
+
+  <nav id="pagination">
+  
+  
+  <div class="clearfix"></div>
+</nav>
+
+
+
+
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="搜索">
+    <input type="hidden" name="q" value="site:mafagan.sinaapp.com">
+  </form>
+</div>
+
+  
+<div class="widget tagcloud">
+  <h3 class="title">标签云</h3>
+  <div class="entry">
+    <a href="/tags/algorithm/" style="font-size: 10.00px;">algorithm</a><a href="/tags/article/" style="font-size: 10.00px;">article</a><a href="/tags/buffer/" style="font-size: 10.00px;">buffer</a><a href="/tags/callback/" style="font-size: 10.00px;">callback</a><a href="/tags/libev/" style="font-size: 10.00px;">libev</a><a href="/tags/libevent/" style="font-size: 10.00px;">libevent</a><a href="/tags/linux/" style="font-size: 10.00px;">linux</a><a href="/tags/mutex/" style="font-size: 20.00px;">mutex</a><a href="/tags/nginx/" style="font-size: 20.00px;">nginx</a><a href="/tags/signal/" style="font-size: 10.00px;">signal</a><a href="/tags/udp/" style="font-size: 10.00px;">udp</a><a href="/tags/unix/" style="font-size: 10.00px;">unix</a><a href="/tags/vim/" style="font-size: 10.00px;">vim</a>
+  </div>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">最新文章</h3>
+  <ul class="entry">
+    
+      <li>
+        <a href="/2015/02/13/linux-udp-buffer/">linux中udp缓冲区大小的查看与设置</a>
+      </li>
+    
+      <li>
+        <a href="/2015/02/05/nginx-mutex-analysis-2/">nginx中的accept-mutex源码分析(二)</a>
+      </li>
+    
+      <li>
+        <a href="/2015/01/31/nginx-mutex-analysis/">nginx中的accept-mutex源码分析(一)</a>
+      </li>
+    
+      <li>
+        <a href="/2015/01/15/libevargs/">libev回调函数的参数传递问题</a>
+      </li>
+    
+      <li>
+        <a href="/2015/01/06/youcompleteme/">小丑的蝙蝠侠——YouCompleteMe</a>
+      </li>
+    
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">标签</h3>
+  <ul class="entry">
+  
+    <li><a href="/tags/algorithm/">algorithm</a><small>1</small></li>
+  
+    <li><a href="/tags/article/">article</a><small>1</small></li>
+  
+    <li><a href="/tags/buffer/">buffer</a><small>1</small></li>
+  
+    <li><a href="/tags/callback/">callback</a><small>1</small></li>
+  
+    <li><a href="/tags/libev/">libev</a><small>1</small></li>
+  
+    <li><a href="/tags/libevent/">libevent</a><small>1</small></li>
+  
+    <li><a href="/tags/linux/">linux</a><small>1</small></li>
+  
+    <li><a href="/tags/mutex/">mutex</a><small>2</small></li>
+  
+    <li><a href="/tags/nginx/">nginx</a><small>2</small></li>
+  
+    <li><a href="/tags/signal/">signal</a><small>1</small></li>
+  
+    <li><a href="/tags/udp/">udp</a><small>1</small></li>
+  
+    <li><a href="/tags/unix/">unix</a><small>1</small></li>
+  
+    <li><a href="/tags/vim/">vim</a><small>1</small></li>
+  
+  </ul>
+</div>
+
+
+  
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2015 Huaguan, Ma
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//lib.sinaapp.com/js/jquery/2.0.3/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+</body>
+</html>

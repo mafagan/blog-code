@@ -1,0 +1,264 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>libev回调函数的参数传递问题 | 坚强的鸡蛋</title>
+  <meta name="author" content="Huaguan, Ma">
+  
+  <meta name="description" content="蛋爷的博客，攻城狮的窝，优雅的外在，科学的内心，互联网中的水吧，这里有一只坚强的鸡蛋！">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="libev回调函数的参数传递问题"/>
+  <meta property="og:site_name" content="坚强的鸡蛋"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="坚强的鸡蛋" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">坚强的鸡蛋</a></h1>
+  <h2><a href="/">Collect the dots in your life.</a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">首页</a></li>
+    
+      <li><a href="/archives">归档</a></li>
+    
+      <li><a href="/about">关于</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div></header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-01-15T10:29:00.000Z"><a href="/2015/01/15/libevargs/">1月 15 2015</a></time>
+      
+      
+  
+    <h1 class="title">libev回调函数的参数传递问题</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>libev是一个类似于libevent的事件驱动型的网络库，之前用它来做项目的时候对它由很高的期望，谁知一上手就遇到了挺无语的问题，先来看下libev的官方示例：<br><a id="more"></a></p>
+<h3 id="Libev调用示例">Libev调用示例</h3>
+<p>首先定义一个I/O变量：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ev_io stdin_readable;</div></pre></td></tr></table></figure>
+
+<p>然后初始化I/O实例：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ev_io_init (&stdin_readable, stdin_readable_cb, STDIN_FILENO, EV_READ);</div></pre></td></tr></table></figure>
+
+<p>然后开始监听：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ev_io_start (loop, &stdin_readable);</div></pre></td></tr></table></figure>
+
+<p>最后生成处理事件的回调函数：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">static</span> <span class="keyword">void</span> stdin_readable_cb (<span class="keyword">struct</span> ev_loop *loop, ev_io *w, <span class="keyword">int</span> revents)</div></pre></td></tr></table></figure>
+
+<p>蛋不舒服的地方就是这个回调函数，三个参数都是libev留给自己调用的，想传个参数进去都没有办法，这个倒是显得libevent比较人性化，一个void*就把所有问题解决了。后来我猜想libev会不会在ev_io这个结构体里面给我留个小小的位置，于是就到libev的头文件里面找，然后就看到了这段代码:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> ev_io                                                                                                               </div><div class="line">{                                                                                                                                  </div><div class="line">    EV_WATCHER_LIST (ev_io)                                                                                                                            </div><div class="line">    <span class="keyword">int</span> fd;     <span class="comment">/* ro */</span></div><div class="line">    <span class="keyword">int</span> events; <span class="comment">/* ro */</span></div><div class="line">} ev_io;</div></pre></td></tr></table></figure>
+
+<p>好吧，遇到了个宏，我跳不就行了，跳完之后发现又有宏，好吧，我再跳，然后，还有宏！受不了了，直接出大招把所有宏替换掉：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gcc -E /usr/include/ev.h -o Eev.h</div></pre></td></tr></table></figure>
+
+<p>到Eev.h里面找到下面这段代码:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> ev_io                                                                                                              </div><div class="line">{                                                                                                                                 </div><div class="line">    <span class="keyword">int</span> active; </div><div class="line">    <span class="keyword">int</span> pending; </div><div class="line">    <span class="keyword">int</span> priority; </div><div class="line">    <span class="keyword">void</span> *data; </div><div class="line">    <span class="keyword">void</span> (*cb)(<span class="keyword">struct</span> ev_loop *loop, <span class="keyword">struct</span> ev_io *w, <span class="keyword">int</span> revents); </div><div class="line">    <span class="keyword">struct</span> ev_watcher_list *next;</div><div class="line">    <span class="keyword">int</span> fd;</div><div class="line">    <span class="keyword">int</span> events;                                                                                                                     </div><div class="line">} ev_io;</div></pre></td></tr></table></figure>
+
+
+<p>不用猜就知道data变量就是我们要找的东东了。</p>
+<h3 id="后记">后记</h3>
+<p>后来我又去官网逛了一圈，发现下面这段话。。</p>
+<blockquote>
+<p>Each watcher has, by default, a void *data member that you can read or modify at any time: libev will completely ignore it. This can be used to associate arbitrary data with your watcher. </p>
+</blockquote>
+<p>官网还提供了一种很巧妙的方法，把ev_io结构放在自定义结构的首位，这样子ev_io实例的地址恰好就是自定义结构体实例的地址：</p>
+<blockquote>
+<p>If you need more data and don’t want to allocate memory separately and store a pointer to it in that data member, you can also “subclass” the watcher type and provide your own data:</p>
+</blockquote>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> my_io</div><div class="line">{</div><div class="line">    ev_io io;</div><div class="line">    <span class="keyword">int</span> otherfd;</div><div class="line">    <span class="keyword">void</span> *somedata;</div><div class="line">    <span class="keyword">struct</span> whatever *mostinteresting;</div><div class="line">};</div><div class="line"><span class="keyword">struct</span> my_io w;</div><div class="line">ev_io_init (&w.io, my_cb, fd, EV_READ);</div></pre></td></tr></table></figure>
+
+<blockquote>
+<p>And since your callback will be called with a pointer to the watcher, you can cast it back to your own type:</p>
+</blockquote>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">static</span> <span class="keyword">void</span> my_cb (<span class="keyword">struct</span> ev_loop *loop, ev_io *w_, <span class="keyword">int</span> revents)</div><div class="line">{</div><div class="line">    <span class="keyword">struct</span> my_io *w = (<span class="keyword">struct</span> my_io *)w_;</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>果然还是应了那句话，多看文档少作死。</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+  
+  <div class="tags">
+    <a href="/tags/libev/">libev</a>, <a href="/tags/callback/">callback</a>
+  </div>
+
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+    <nav id="pagination" >
+        
+            <a href="/2015/01/31/nginx-mutex-analysis/" class="alignleft prev" >上一页</a>
+                
+                
+                    <a href="/2015/01/06/youcompleteme/" class="alignright next" >下一页</a>
+                        
+                        <div class="clearfix"></div>
+                        </nav>
+
+
+    <section id="comment">
+       <div class="ds-thread" data-thread-key="2015/01/15/libevargs/" data-title="libev回调函数的参数传递问题" data-url="http://mafagan.sinaapp.com/2015/01/15/libevargs/"></div>
+
+        <script type="text/javascript">
+        var duoshuoQuery = {short_name:"mafagan"};
+    (function() {
+     var ds = document.createElement('script');
+     ds.type = 'text/javascript';ds.async = true;
+     ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+     ds.charset = 'UTF-8';
+     (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+     })();
+    </script>
+    </section>
+
+
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="搜索">
+    <input type="hidden" name="q" value="site:mafagan.sinaapp.com">
+  </form>
+</div>
+
+  
+<div class="widget tagcloud">
+  <h3 class="title">标签云</h3>
+  <div class="entry">
+    <a href="/tags/algorithm/" style="font-size: 10.00px;">algorithm</a><a href="/tags/article/" style="font-size: 10.00px;">article</a><a href="/tags/buffer/" style="font-size: 10.00px;">buffer</a><a href="/tags/callback/" style="font-size: 10.00px;">callback</a><a href="/tags/libev/" style="font-size: 10.00px;">libev</a><a href="/tags/libevent/" style="font-size: 10.00px;">libevent</a><a href="/tags/linux/" style="font-size: 10.00px;">linux</a><a href="/tags/mutex/" style="font-size: 20.00px;">mutex</a><a href="/tags/nginx/" style="font-size: 20.00px;">nginx</a><a href="/tags/signal/" style="font-size: 10.00px;">signal</a><a href="/tags/udp/" style="font-size: 10.00px;">udp</a><a href="/tags/unix/" style="font-size: 10.00px;">unix</a><a href="/tags/vim/" style="font-size: 10.00px;">vim</a>
+  </div>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">最新文章</h3>
+  <ul class="entry">
+    
+      <li>
+        <a href="/2015/02/13/linux-udp-buffer/">linux中udp缓冲区大小的查看与设置</a>
+      </li>
+    
+      <li>
+        <a href="/2015/02/05/nginx-mutex-analysis-2/">nginx中的accept-mutex源码分析(二)</a>
+      </li>
+    
+      <li>
+        <a href="/2015/01/31/nginx-mutex-analysis/">nginx中的accept-mutex源码分析(一)</a>
+      </li>
+    
+      <li>
+        <a href="/2015/01/15/libevargs/">libev回调函数的参数传递问题</a>
+      </li>
+    
+      <li>
+        <a href="/2015/01/06/youcompleteme/">小丑的蝙蝠侠——YouCompleteMe</a>
+      </li>
+    
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">标签</h3>
+  <ul class="entry">
+  
+    <li><a href="/tags/algorithm/">algorithm</a><small>1</small></li>
+  
+    <li><a href="/tags/article/">article</a><small>1</small></li>
+  
+    <li><a href="/tags/buffer/">buffer</a><small>1</small></li>
+  
+    <li><a href="/tags/callback/">callback</a><small>1</small></li>
+  
+    <li><a href="/tags/libev/">libev</a><small>1</small></li>
+  
+    <li><a href="/tags/libevent/">libevent</a><small>1</small></li>
+  
+    <li><a href="/tags/linux/">linux</a><small>1</small></li>
+  
+    <li><a href="/tags/mutex/">mutex</a><small>2</small></li>
+  
+    <li><a href="/tags/nginx/">nginx</a><small>2</small></li>
+  
+    <li><a href="/tags/signal/">signal</a><small>1</small></li>
+  
+    <li><a href="/tags/udp/">udp</a><small>1</small></li>
+  
+    <li><a href="/tags/unix/">unix</a><small>1</small></li>
+  
+    <li><a href="/tags/vim/">vim</a><small>1</small></li>
+  
+  </ul>
+</div>
+
+
+  
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2015 Huaguan, Ma
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//lib.sinaapp.com/js/jquery/2.0.3/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+</body>
+</html>

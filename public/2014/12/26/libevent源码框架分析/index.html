@@ -1,0 +1,247 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Libevent源码框架分析 | 坚强的鸡蛋</title>
+  <meta name="author" content="Huaguan, Ma">
+  
+  <meta name="description" content="蛋爷的博客，攻城狮的窝，优雅的外在，科学的内心，互联网中的水吧，这里有一只坚强的鸡蛋！">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="Libevent源码框架分析"/>
+  <meta property="og:site_name" content="坚强的鸡蛋"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="坚强的鸡蛋" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">坚强的鸡蛋</a></h1>
+  <h2><a href="/">Collect the dots in your life.</a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">首页</a></li>
+    
+      <li><a href="/archives">归档</a></li>
+    
+      <li><a href="/about">关于</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div></header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2014-12-26T02:25:00.000Z"><a href="/2014/12/26/libevent源码框架分析/">12月 26 2014</a></time>
+      
+      
+  
+    <h1 class="title">Libevent源码框架分析</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>libevent是一个事件触发(<strong>Reactor</strong>)的网络库，适用于windows、linux、bsd等多种平台，内部使用select、epoll、kqueue等系统调用管理事件机制。与其它网络库相比，libevent最大的特点就是很好的整合了I/O、timer以及signal的处理。之前我曾经在实习项目中用到过libevent，由于当时对整个libevent的运行方式不太熟悉，导致设计程序框架的时候多了很多不必要的考虑和编码，所以就在这里对libevent的核心部分进行一次剖析。<br><a id="more"></a></p>
+<h2 id="libevent的使用">libevent的使用</h2>
+<p>对于libevent来说，I/O, timer以及signal都是一个event，其内部已经封装好了对这些事件的处理，因此用户调用的时候只需要注册关心的事件以及事件的处理函数(即回调函数),然后等待事件的即可。问题的关键是libevent是怎么整合这些事件的？下面我来解释一下。</p>
+<p><strong>注：关于libevent的详细使用方法可以查阅<a href="http://www.wangafu.net/~nickm/libevent-book/" target="_blank" rel="external">官方手册</a>(貌似要番嫱。。)</strong></p>
+<h2 id="libevent的主体框架">libevent的主体框架</h2>
+<p>libevent的设计比较清晰明了，核心部分就是一个主循环，负责监控各个事件，并维护一个活跃链表(<strong>active list</strong>)，对于就绪的事件，libevent就把它插入到活跃链表中，然后按照优先级顺序分别执行活跃链表中得事件的注册回调函数。</p>
+<p>从主循环入口开始，程序要先先检测退出标识，若有则退出循环，否则继续。记录当前时间，获取timer事件中最早到期事件的时间，这里说下timer事件存储的数据结构。timer中得事件根据超时时间的大小使用小根堆得方式存储，因此插入和删除都是O(logn)的时间复杂度，而获取最早超时的事件只需要直接读取堆顶得数据即可。获取最早超时的时间和当前时间的时间差作为epoll等函数的超时时间，这就避免了因为没有I/O操作导致程序错过了执行timer事件的情况。处理完I/O事件之后，就可以及时地继续处理timer事件了。</p>
+<p>下面我们来看一下源代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">while</span> (!done) {</div><div class="line">    base-&gt;event_continue = <span class="number">0</span>;</div><div class="line"></div><div class="line">    <span class="comment">/* Terminate the loop if we have been asked to */</span></div><div class="line">    <span class="keyword">if</span> (base-&gt;event_gotterm) {</div><div class="line">        <span class="keyword">break</span>;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (base-&gt;event_break) {</div><div class="line">        <span class="keyword">break</span>;</div><div class="line">    }</div><div class="line"></div><div class="line">    timeout_correct(base, &tv);</div><div class="line"></div><div class="line">    tv_p = &tv;</div><div class="line">    <span class="keyword">if</span> (!N_ACTIVE_CALLBACKS(base) && !(flags & EVLOOP_NONBLOCK)) {</div><div class="line">        timeout_next(base, &tv_p);</div><div class="line">    } <span class="keyword">else</span> {</div><div class="line">        <span class="comment">/*</span></div><div class="line">         * if we have active events, we just poll new events</div><div class="line">         * without waiting.</div><div class="line">         */</div><div class="line">        evutil_timerclear(&tv);</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="comment">/* If we have no events, we just exit */</span></div><div class="line">    <span class="keyword">if</span> (!event_haveevents(base) && !N_ACTIVE_CALLBACKS(base)) {</div><div class="line">        event_debug((<span class="string">"%s: no events registered."</span>, __func__));</div><div class="line">        retval = <span class="number">1</span>;</div><div class="line">        <span class="keyword">goto</span> done;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="comment">/* update last old time */</span></div><div class="line">    gettime(base, &base-&gt;event_tv);</div><div class="line"></div><div class="line">    clear_time_cache(base);</div><div class="line"></div><div class="line">    <span class="comment">/* 等待I/O事件，并设定最大等待时间 */</span></div><div class="line">    res = evsel-&gt;dispatch(base, tv_p);</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (res == -<span class="number">1</span>) {</div><div class="line">        event_debug((<span class="string">"%s: dispatch returned unsuccessfully."</span>,</div><div class="line">                    __func__));</div><div class="line">        retval = -<span class="number">1</span>;</div><div class="line">        <span class="keyword">goto</span> done;</div><div class="line">    }</div><div class="line"></div><div class="line">    update_time_cache(base);</div><div class="line"></div><div class="line">    <span class="comment">/* 处理到时事件 */</span></div><div class="line">    timeout_process(base);</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (N_ACTIVE_CALLBACKS(base)) {</div><div class="line"></div><div class="line">        <span class="comment">/* 处理活跃链表中得事件 */</span></div><div class="line">        <span class="keyword">int</span> n = event_process_active(base);</div><div class="line">        <span class="keyword">if</span> ((flags & EVLOOP_ONCE)</div><div class="line">                && N_ACTIVE_CALLBACKS(base) == <span class="number">0</span></div><div class="line">                && n != <span class="number">0</span>)</div><div class="line">            done = <span class="number">1</span>;</div><div class="line">    } <span class="keyword">else</span> <span class="keyword">if</span> (flags & EVLOOP_NONBLOCK)</div><div class="line">        done = <span class="number">1</span>;</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>主循环的框架如下图:</p>
+<p><img src="http://ccxcu.img43.wal8.com/img43/507748_20150118041318/142152564418.jpg" alt="libevent_loop"></p>
+<p>上文只是解释了I/O和timer的工作流程，还有signal部分尚未讲解。signal对于程序来说是完全异步的，你完全不知道注册的回调函数会在什么时候调用，那么libevent是怎么把signal整合进去的呢？这也是我一开始对libevent感到最好奇的地方。</p>
+<h2 id="libevent对signal的处理">libevent对signal的处理</h2>
+<p>细心的朋友可能已经在上面的框架图中找到了答案，没错，libevent把signal信号转换成了I/O数据。具体的方法就是使用socket pair进行数据交流。在实际操作中，生成一对socket, 其中一个为读socket，另一个为写socket，写socket得数据自然是流向读socket。在捕捉到信号之后，libevent就会找到这个写socket，向里面写入一个8位的数据，值就是信号值。当然，在用户注册了监控的信号之后，libevent就已经把读socket列入监控的范围，在下一次epoll_wait操作的时候自然就可以获取信号的相关信息。</p>
+<p>signal部分的源代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">static</span> <span class="keyword">void</span> __cdecl evsig_handler(<span class="keyword">int</span> sig)</div><div class="line">{</div><div class="line">    <span class="keyword">int</span> save_errno = errno;</div><div class="line"><span class="preprocessor">#ifdef WIN32</span></div><div class="line">    <span class="keyword">int</span> socket_errno = EVUTIL_SOCKET_ERROR();</div><div class="line"><span class="preprocessor">#<span class="keyword">endif</span></span></div><div class="line">    ev_uint8_t msg;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (evsig_base == NULL) {</div><div class="line">        event_warnx(</div><div class="line">                <span class="string">"%s: received signal %d, but have no base configured"</span>,</div><div class="line">                __func__, sig);</div><div class="line">        <span class="keyword">return</span>;</div><div class="line">    }</div><div class="line"></div><div class="line"><span class="preprocessor">#ifndef _EVENT_HAVE_SIGACTION</span></div><div class="line">    signal(sig, evsig_handler);</div><div class="line"><span class="preprocessor">#<span class="keyword">endif</span></span></div><div class="line"></div><div class="line">    <span class="comment">/* Wake up our notification mechanism */</span></div><div class="line">    msg = sig;</div><div class="line">    send(evsig_base_fd, (<span class="keyword">char</span>*)&msg, <span class="number">1</span>, <span class="number">0</span>);</div><div class="line">    errno = save_errno;</div><div class="line"><span class="preprocessor">#ifdef WIN32</span></div><div class="line">    EVUTIL_SET_SOCKET_ERROR(socket_errno);</div><div class="line"><span class="preprocessor">#<span class="keyword">endif</span></span></div><div class="line">}</div></pre></td></tr></table></figure>
+
+<h1 id="总结">总结</h1>
+<p>libevent的代码放置比较随意，都在根目录下，但是整体设计还是比较简洁明了的。libevent的想法是想提供一套全面跨平台的网络I/O解决方案，因此性能也没有达到极致。当然，我认为libevent在设计上最大的缺点就是使用了全局变量。因此，我更建议使用libev，从名字看就知道，两者的功能相近，设计相似(怎么有点某鹅的赶脚。。)，但是libev有着更少的bug，去掉了该死的全局变量，专注于posix，秉承unix“一个程序只做一件事，并做好它”，因此我在接下来的项目中也会采用libev。</p>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/coding/">coding</a>
+  </div>
+
+        
+  
+  <div class="tags">
+    <a href="/tags/libevent/">libevent</a>, <a href="/tags/unix/">unix</a>, <a href="/tags/signal/">signal</a>
+  </div>
+
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+    <nav id="pagination" >
+        
+            <a href="/2015/01/06/youcompleteme/" class="alignleft prev" >上一页</a>
+                
+                
+                    <a href="/2014/12/24/article/" class="alignright next" >下一页</a>
+                        
+                        <div class="clearfix"></div>
+                        </nav>
+
+
+    <section id="comment">
+       <div class="ds-thread" data-thread-key="2014/12/26/libevent源码框架分析/" data-title="Libevent源码框架分析" data-url="http://mafagan.sinaapp.com/2014/12/26/libevent源码框架分析/"></div>
+
+        <script type="text/javascript">
+        var duoshuoQuery = {short_name:"mafagan"};
+    (function() {
+     var ds = document.createElement('script');
+     ds.type = 'text/javascript';ds.async = true;
+     ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+     ds.charset = 'UTF-8';
+     (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+     })();
+    </script>
+    </section>
+
+
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="搜索">
+    <input type="hidden" name="q" value="site:mafagan.sinaapp.com">
+  </form>
+</div>
+
+  
+<div class="widget tagcloud">
+  <h3 class="title">标签云</h3>
+  <div class="entry">
+    <a href="/tags/algorithm/" style="font-size: 10.00px;">algorithm</a><a href="/tags/article/" style="font-size: 10.00px;">article</a><a href="/tags/buffer/" style="font-size: 10.00px;">buffer</a><a href="/tags/callback/" style="font-size: 10.00px;">callback</a><a href="/tags/libev/" style="font-size: 10.00px;">libev</a><a href="/tags/libevent/" style="font-size: 10.00px;">libevent</a><a href="/tags/linux/" style="font-size: 10.00px;">linux</a><a href="/tags/mutex/" style="font-size: 20.00px;">mutex</a><a href="/tags/nginx/" style="font-size: 20.00px;">nginx</a><a href="/tags/signal/" style="font-size: 10.00px;">signal</a><a href="/tags/udp/" style="font-size: 10.00px;">udp</a><a href="/tags/unix/" style="font-size: 10.00px;">unix</a><a href="/tags/vim/" style="font-size: 10.00px;">vim</a>
+  </div>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">最新文章</h3>
+  <ul class="entry">
+    
+      <li>
+        <a href="/2015/02/13/linux-udp-buffer/">linux中udp缓冲区大小的查看与设置</a>
+      </li>
+    
+      <li>
+        <a href="/2015/02/05/nginx-mutex-analysis-2/">nginx中的accept-mutex源码分析(二)</a>
+      </li>
+    
+      <li>
+        <a href="/2015/01/31/nginx-mutex-analysis/">nginx中的accept-mutex源码分析(一)</a>
+      </li>
+    
+      <li>
+        <a href="/2015/01/15/libevargs/">libev回调函数的参数传递问题</a>
+      </li>
+    
+      <li>
+        <a href="/2015/01/06/youcompleteme/">小丑的蝙蝠侠——YouCompleteMe</a>
+      </li>
+    
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">标签</h3>
+  <ul class="entry">
+  
+    <li><a href="/tags/algorithm/">algorithm</a><small>1</small></li>
+  
+    <li><a href="/tags/article/">article</a><small>1</small></li>
+  
+    <li><a href="/tags/buffer/">buffer</a><small>1</small></li>
+  
+    <li><a href="/tags/callback/">callback</a><small>1</small></li>
+  
+    <li><a href="/tags/libev/">libev</a><small>1</small></li>
+  
+    <li><a href="/tags/libevent/">libevent</a><small>1</small></li>
+  
+    <li><a href="/tags/linux/">linux</a><small>1</small></li>
+  
+    <li><a href="/tags/mutex/">mutex</a><small>2</small></li>
+  
+    <li><a href="/tags/nginx/">nginx</a><small>2</small></li>
+  
+    <li><a href="/tags/signal/">signal</a><small>1</small></li>
+  
+    <li><a href="/tags/udp/">udp</a><small>1</small></li>
+  
+    <li><a href="/tags/unix/">unix</a><small>1</small></li>
+  
+    <li><a href="/tags/vim/">vim</a><small>1</small></li>
+  
+  </ul>
+</div>
+
+
+  
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2015 Huaguan, Ma
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//lib.sinaapp.com/js/jquery/2.0.3/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+</body>
+</html>
