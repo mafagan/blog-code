@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>归档：2014 | 坚强的鸡蛋</title>
+  <title>STL | 坚强的鸡蛋</title>
   <meta name="author" content="Huaguan, Ma">
   
   <meta name="description" content="蛋爷的博客，攻城狮的窝，优雅的外在，科学的内心，互联网中的水吧，这里有一只坚强的鸡蛋！">
@@ -48,7 +48,7 @@
 </header>
   <div id="content" class="inner">
     <div id="main-col" class="alignleft"><div id="wrapper">
-<h2 class="archive-title">2014</h2>
+<h2 class="archive-title tag">STL</h2>
 
 
   
@@ -58,72 +58,28 @@
     <header>
       
         <div class="icon"></div>
-        <time datetime="2014-12-26T02:25:00.000Z"><a href="/2014/12/26/libevent源码框架分析/">12月 26 2014</a></time>
+        <time datetime="2015-02-16T10:53:00.000Z"><a href="/2015/02/16/associated-types/">2月 16 2015</a></time>
       
       
   
-    <h1 class="title"><a href="/2014/12/26/libevent源码框架分析/">Libevent源码框架分析</a></h1>
-  
-
-    </header>
-    <div class="entry">
-      
-        <p>libevent是一个事件触发(<strong>Reactor</strong>)的网络库，适用于windows、linux、bsd等多种平台，内部使用select、epoll、kqueue等系统调用管理事件机制。与其它网络库相比，libevent最大的特点就是很好的整合了I/O、timer以及signal的处理。之前我曾经在实习项目中用到过libevent，由于当时对整个libevent的运行方式不太熟悉，导致设计程序框架的时候多了很多不必要的考虑和编码，所以就在这里对libevent的核心部分进行一次剖析。<br>
-      
-    </div>
-    <footer>
-      
-        
-          <div class="alignleft">
-            <a href="/2014/12/26/libevent源码框架分析/#more" class="more-link">阅读全文</a>
-          </div>
-        
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
-
-  
-    <article class="post">
-  
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2014-12-24T11:38:00.000Z"><a href="/2014/12/24/article/">12月 24 2014</a></time>
-      
-      
-  
-    <h1 class="title"><a href="/2014/12/24/article/">Article test</a></h1>
+    <h1 class="title"><a href="/2015/02/16/associated-types/">《STL源码剖析》读书笔记(一)——迭代器的相应类型</a></h1>
   
 
     </header>
     <div class="entry">
       
-        <h1 id="Mou">Mou</h1>
-<h2 id="Overview">Overview</h2>
-<p><strong>Mou</strong>, the missing Markdown editor for <em>web developers</em>.</p>
-<h3 id="Syntax">Syntax</h3>
-<h4 id="Strong_and_Emphasize">Strong and Emphasize</h4>
-<p><strong>strong</strong> or <strong>strong</strong> ( Cmd + B )</p>
-<p><em>emphasize</em> or <em>emphasize</em> ( Cmd + I )</p>
-<p><strong>Sometimes I want a lot of text to be bold.<br>Like, seriously, a <em>LOT</em> of text</strong></p>
-<h4 id="Blockquotes">Blockquotes</h4>
-<blockquote>
-<p>Right angle brackets &gt; are used for block quotes.<br>
+        <p>迭代器是一种智能指针，主要完成的工作无非就是提取它所指向的内容和成员的访问。</p>
+<h2 id="迭代器的相应类型(台译作『型别』)">迭代器的相应类型(台译作『型别』)</h2>
+<p>问题：现在有一个迭代器，在算法的实现中需要获取它的相应类型，也就是迭代器所指向对象的类型，应该怎么做？</p>
+<p>其中的一种解决方法就是使用function template的参数推导(argument deducation)机制。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div><div class="line"><span class="keyword">void</span> real_func(T instance)</div><div class="line">{</div><div class="line">        <span class="built_in">cout</span> &lt;&lt; instance &lt;&lt; endl;</div><div class="line"></div><div class="line">}</div><div class="line"></div><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div><div class="line"><span class="keyword">void</span> func(T iter)</div><div class="line">{</div><div class="line">        real_func(*iter);</div><div class="line"></div><div class="line">}</div><div class="line"></div><div class="line"><span class="keyword">int</span> main()</div><div class="line">{</div><div class="line">    <span class="keyword">int</span> a = <span class="number">2</span>;</div><div class="line">    func(&a);</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>这种方法可以解决大多数应用的情况，巧妙地获取了迭代器所指向对象的类型。</p>
+
       
     </div>
     <footer>
       
-        
-          <div class="alignleft">
-            <a href="/2014/12/24/article/#more" class="more-link">阅读全文</a>
-          </div>
         
         
       

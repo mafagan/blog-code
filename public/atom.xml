@@ -1,0 +1,566 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title><![CDATA[坚强的鸡蛋]]></title>
+  <subtitle><![CDATA[Collect the dots in your life.]]></subtitle>
+  <link href="/atom.xml" rel="self"/>
+  <link href="http://mafagan.sinaapp.com/"/>
+  <updated>2015-02-16T15:16:36.666Z</updated>
+  <id>http://mafagan.sinaapp.com/</id>
+  
+  <author>
+    <name><![CDATA[Huaguan, Ma]]></name>
+    <email><![CDATA[mahuaguan@126.com]]></email>
+  </author>
+  
+  <generator uri="http://zespia.tw/hexo/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[《STL源码剖析》读书笔记(一)——迭代器的相应类型]]></title>
+    <link href="http://mafagan.sinaapp.com/2015/02/16/associated-types/"/>
+    <id>http://mafagan.sinaapp.com/2015/02/16/associated-types/</id>
+    <published>2015-02-16T10:53:00.000Z</published>
+    <updated>2015-02-16T11:29:29.000Z</updated>
+    <content type="html"><![CDATA[<p>迭代器是一种智能指针，主要完成的工作无非就是提取它所指向的内容和成员的访问。</p>
+<h2 id="迭代器的相应类型(台译作『型别』)">迭代器的相应类型(台译作『型别』)</h2>
+<p>问题：现在有一个迭代器，在算法的实现中需要获取它的相应类型，也就是迭代器所指向对象的类型，应该怎么做？</p>
+<p>其中的一种解决方法就是使用function template的参数推导(argument deducation)机制。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div><div class="line"><span class="keyword">void</span> real_func(T instance)</div><div class="line">{</div><div class="line">        <span class="built_in">cout</span> &lt;&lt; instance &lt;&lt; endl;</div><div class="line"></div><div class="line">}</div><div class="line"></div><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div><div class="line"><span class="keyword">void</span> func(T iter)</div><div class="line">{</div><div class="line">        real_func(*iter);</div><div class="line"></div><div class="line">}</div><div class="line"></div><div class="line"><span class="keyword">int</span> main()</div><div class="line">{</div><div class="line">    <span class="keyword">int</span> a = <span class="number">2</span>;</div><div class="line">    func(&a);</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>这种方法可以解决大多数应用的情况，巧妙地获取了迭代器所指向对象的类型。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>迭代器是一种智能指针，主要完成的工作无非就是提取它所指向的内容和成员的访问。</p>
+<h2 id="迭代器的相应类型(台译作『型别』)">迭代器的相应类型(台译作『型别』)</h2>
+<p>问题：现在有一个迭代器，在算法的实现中需要获取它的相应类型，也就是迭代器所指向对象]]>
+    </summary>
+    
+      <category term="C++" scheme="http://mafagan.sinaapp.com/tags/C/"/>
+    
+      <category term="STL" scheme="http://mafagan.sinaapp.com/tags/STL/"/>
+    
+      <category term="iterator" scheme="http://mafagan.sinaapp.com/tags/iterator/"/>
+    
+      <category term="coding" scheme="http://mafagan.sinaapp.com/categories/coding/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[linux中udp缓冲区大小的查看与设置]]></title>
+    <link href="http://mafagan.sinaapp.com/2015/02/13/linux-udp-buffer/"/>
+    <id>http://mafagan.sinaapp.com/2015/02/13/linux-udp-buffer/</id>
+    <published>2015-02-13T13:37:00.000Z</published>
+    <updated>2015-02-13T16:46:14.000Z</updated>
+    <content type="html"><![CDATA[<p>鉴于tcp有重传机制，更多的时候udp对收发缓冲区的大小可能更加敏感一点。</p>
+<p>udp缓冲区的大小主要和以下几个值有关：</p>
+<ol>
+<li>/proc/sys/net/core/rmem_max ——— udp缓冲区的最大值，单位字节，下同</li>
+<li>/proc/sys/net/core/rmem_default ———- udp缓冲区的默认值，如果不更改的话程序的udp缓冲区默认值就是这个。</li>
+</ol>
+<p>查看方法可以直接<code>cat</code>以上两个文件进行查看，也可以通过<code>sysctl</code>查看。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sysctl <span class="operator">-a</span> | grep rmem_max</div></pre></td></tr></table></figure>
+
+<p>其实sysctl信息来源就是<code>proc</code>下的文件。</p>
+<h2 id="更改udp缓冲区大小">更改udp缓冲区大小</h2>
+<h3 id="程序中进行更改">程序中进行更改</h3>
+<p>程序中可以使用setsockopt函数与SO_RCVBUF选项对udp缓冲区的值进行更改，但是要注意不管设置的值有多大，超过rmem_max的部分都会被无视。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">int a = value_wanted;</div><div class="line"><span class="keyword">if</span> (setsockopt(sockfd, SOL_SOCKET, SO_RCVBUF, &a, sizeof(int)) == -<span class="number">1</span>) {</div><div class="line">    <span class="keyword">...</span></div><div class="line">}</div></pre></td></tr></table></figure>
+
+<h3 id="更改系统值">更改系统值</h3>
+<p>如果确实要把udp缓冲区改到一个比较大的值，那就需要更改rmem_max的值。<br>编辑/etc/rc.local文件添加以下代码可使系统在每次启动的时候自动更改系统缓冲区的最大值。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">echo value_wanted &gt; /<span class="keyword">proc</span>/sys/net/core/rmem_default</div></pre></td></tr></table></figure>
+
+<p>或者在/etc/sysctl.conf添加以下代码即可在重启后永久生效。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="attribute">rmem_max</span>=<span class="string">MAX</span></div></pre></td></tr></table></figure>
+
+<p>不想重启的话使用命令<code>sysctl -p</code>即可。</p>
+<p>可以顺便看下setsockopt在linux下的相关实现</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">...</span></div><div class="line"></div><div class="line">case SO_SNDBUF:</div><div class="line">    <span class="keyword">if</span> (val &gt; sysctl_wmem_max)</div><div class="line">        val = sysctl_wmem_max;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> ((val * <span class="number">2</span>) &lt; SOCK_MIN_SNDBUF)</div><div class="line">        sk-&gt;sk_sndbuf = SOCK_MIN_SNDBUF;</div><div class="line">    <span class="keyword">else</span></div><div class="line">        sk-&gt;sk_sndbuf = val * <span class="number">2</span>; //当然缓冲区在系统中的实际值要大一点，因为udp报头以及IP报头等都是需要空间的。</div><div class="line"><span class="keyword">...</span></div></pre></td></tr></table></figure>
+
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>鉴于tcp有重传机制，更多的时候udp对收发缓冲区的大小可能更加敏感一点。</p>
+<p>udp缓冲区的大小主要和以下几个值有关：</p>
+<ol>
+<li>/proc/sys/net/core/rmem_max ——— udp缓冲区的最大值，单位字节，下同</li>
+<l]]>
+    </summary>
+    
+      <category term="linux" scheme="http://mafagan.sinaapp.com/tags/linux/"/>
+    
+      <category term="udp" scheme="http://mafagan.sinaapp.com/tags/udp/"/>
+    
+      <category term="buffer" scheme="http://mafagan.sinaapp.com/tags/buffer/"/>
+    
+      <category term="coding" scheme="http://mafagan.sinaapp.com/categories/coding/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[nginx中的accept-mutex源码分析(二)]]></title>
+    <link href="http://mafagan.sinaapp.com/2015/02/05/nginx-mutex-analysis-2/"/>
+    <id>http://mafagan.sinaapp.com/2015/02/05/nginx-mutex-analysis-2/</id>
+    <published>2015-02-05T14:24:00.000Z</published>
+    <updated>2015-02-10T11:59:46.000Z</updated>
+    <content type="html"><![CDATA[<p>在上篇文章里我们了解了nginx使用accept-mutex解决『惊群』问题的方法，其实在nginx的架构中，accept-mutex还起到了另外一个作用，负载均衡。</p>
+<h3 id="worker_process的负载均衡">worker process的负载均衡</h3>
+<p>在nginx抢夺accept-mutex之前有一个判断条件</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (ngx_accept_disabled &gt; <span class="number">0</span>) {</div><div class="line">    ngx_accept_disabled--;                </div><div class="line">} <span class="keyword">else</span> {<span class="keyword">...</span>}</div></pre></td></tr></table></figure>
+
+<p>很显然，如果ngx_use_accept_mutex为正，这个worker会放弃这一次抢夺mutex的机会。而在每次抢夺mutex之前(或者说抢夺mutex之后)，worker都会对ngx_accept_disabled这个变量的值进行计算，算法如下</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">ngx_accept_disabled = ngx_cycle-&gt;connection_n / <span class="number">8</span></div><div class="line">                        - ngx_cycle-&gt;free_connection_n;</div></pre></td></tr></table></figure>
+
+<p>connection_n表示的是最大连接数，free_connection_n表示的就是剩余连接数，因此当剩余连接少于总连接数的八分之一，也就是已用连接数多于总连接数的八分之七，worker就会放弃这一次抢夺mutex的机会。那如果所有的worker的connection都超过八分之七哪怎么办？会不会导致整个nginx停止工作？这个你可以放心，注意代码里有这么一行<code>ngx_accept_disabled--;</code>，很明显worker不会一直放弃抢夺mutex的机会，因为每放弃一次，该变量的值都会减少一次，直至小于0.<br>注：最大连接数在nginx中是一个可配置选项，名为worker connections，下面是官方的解释，</p>
+<blockquote>
+<p>Sets the maximum number of simultaneous connections that can be opened<br>by a worker process.</p>
+</blockquote>
+<h3 id="结语">结语</h3>
+<p>之前对这一部分的代码一直很好奇很期待，现在了解了之后倒是觉得有一点点失望。不过，这里的负载均衡指的是nginx作为服务器时使用的平衡各个worker负载的方法，至于我们用得更多的nginx作为反向代理服务器使用的负载均衡是完全不同的方法，有空再研究下里面的代码。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>在上篇文章里我们了解了nginx使用accept-mutex解决『惊群』问题的方法，其实在nginx的架构中，accept-mutex还起到了另外一个作用，负载均衡。</p>
+<h3 id="worker_process的负载均衡">worker process的负载均衡<]]>
+    </summary>
+    
+      <category term="nginx" scheme="http://mafagan.sinaapp.com/tags/nginx/"/>
+    
+      <category term="mutex" scheme="http://mafagan.sinaapp.com/tags/mutex/"/>
+    
+      <category term="algorithm" scheme="http://mafagan.sinaapp.com/tags/algorithm/"/>
+    
+      <category term="coding" scheme="http://mafagan.sinaapp.com/categories/coding/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[nginx中的accept-mutex源码分析(一)]]></title>
+    <link href="http://mafagan.sinaapp.com/2015/01/31/nginx-mutex-analysis/"/>
+    <id>http://mafagan.sinaapp.com/2015/01/31/nginx-mutex-analysis/</id>
+    <published>2015-01-31T06:26:00.000Z</published>
+    <updated>2015-02-03T04:04:33.000Z</updated>
+    <content type="html"><![CDATA[<p>最近的项目遇到了些麻烦，于是就到各家项目的源码里东逛逛西逛逛，看看有没有什么值得借鉴(chao)的东西，一来二去总算是找(chao)到了一些有用的东西，同时还无意间了解了下nginx的源码结构，其中nginx对于accept的处理倒是让我有种别开生面的赶脚(菜鸟本质暴露了…)，所以这里就写下来做个小小的记录。<br><a id="more"></a></p>
+<h3 id="nginx架构">nginx架构</h3>
+<p>nginx是典型的多进程模式，其中一个是master进程，其它是worker进程，顾名思义，master就是负责管理的，管理各个worker进程，worker进程自然就是干活的，具体点就是处理数据、处理请求的。</p>
+<p>nginx所有的worker进程都会监听端口，实现方法比较简单，首先让父进程监听80端口，获得fd，fork之后子进程自然会继承监听fd。细心的童鞋会注意到，这里面至少有两个问题，一个是当请求过来的时候哪个进程能获得这个请求的处理权，另一个问题就是如何做到负载均衡。</p>
+<h3 id="惊群">惊群</h3>
+<p>第一个问题涉及到一个比较经典的现象，名叫『惊群』。有时候我们会使用多个进程对一个fd进行accept，在早期的linux版本中，请求到来的时候所有的accept都会惊醒，其中一个返回成功，其它都会返回accept失败，这就是所谓的『惊群』现象。不过linux-2.6之后的版本中，这个问题得到了修复，也就是请求到达的时候，只有可以成功accept的那个进程会惊醒，而其它会继续阻塞。</p>
+<p>这个貌似解决了问题，其实问题还没有结束。在现代的服务器设计中，很少还会用一个进程或者一个线程进行accept操作，更多地是使用多路I/O复用技术，这里以epoll为例，当把listen fd加入到epoll监听中，请求到来的时候依旧会惊醒所有的进程，真是蛋疼…好吧，我们来看看nginx的应对惊群的经典解决方案。</p>
+<h3 id="nginx的accept-mutex">nginx的accept-mutex</h3>
+<p>nginx在监听listen fd(或者说把listen fd加入到epoll中)之前首先需要去竞争一把锁，只有在获得了这把锁之后才对listen fd进行监听。获取锁是马上返回的，当获取失败的时候，nginx会结合timer事件设置最大等待时间，然后再去获取监听锁。如果进程获取到监听锁，则…还是直接看代码吧，套用linus的名言：</p>
+<blockquote>
+<p>Read the fucking source code.</p>
+</blockquote>
+<p>翻译成中文就是，方便的话请阅读源代码^_^.</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div></pre></td><td class="code"><pre><div class="line">void</div><div class="line">ngx_process_events_and_timers(ngx_cycle_t *cycle)</div><div class="line">{</div><div class="line">    ngx_uint_t  flags;</div><div class="line">    ngx_msec_t  timer, delta;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (ngx_timer_resolution) {</div><div class="line">        <span class="variable">timer =</span> NGX_TIMER_INFINITE;</div><div class="line">        <span class="variable">flags =</span> <span class="number">0</span>;</div><div class="line"></div><div class="line">    } <span class="keyword">else</span> {</div><div class="line">        <span class="variable">timer =</span> ngx_event_find_timer();</div><div class="line">        <span class="variable">flags =</span> NGX_UPDATE_TIME;</div><div class="line"></div><div class="line"><span class="comment">#if (NGX_THREADS)</span></div><div class="line"></div><div class="line">    <span class="keyword">if</span> (<span class="variable">timer =</span>= NGX_TIMER_INFINITE || timer &gt; <span class="number">500</span>) {</div><div class="line">        <span class="variable">timer =</span> <span class="number">500</span>;</div><div class="line">    }</div><div class="line"></div><div class="line"><span class="comment">#endif</span></div><div class="line">    }</div><div class="line">	<span class="comment">/* 检测是否启用mutex，多worker进程下一般都会启用 */</span></div><div class="line">    <span class="keyword">if</span> (ngx_use_accept_mutex) {</div><div class="line">        <span class="keyword">if</span> (ngx_accept_disabled &gt; <span class="number">0</span>) {</div><div class="line">            ngx_accept_disabled--;</div><div class="line"></div><div class="line">        } <span class="keyword">else</span> {</div><div class="line">            <span class="keyword">if</span> (ngx_trylock_accept_mutex(cycle) == NGX_ERROR) {</div><div class="line">            <span class="comment">/* 尝试获取锁，不管成功还是失败都会立即返回 */</span></div><div class="line">                return;</div><div class="line">            }</div><div class="line"></div><div class="line">            <span class="keyword">if</span> (ngx_accept_mutex_held) {</div><div class="line">                <span class="comment">/* 获取到锁之后添加flag */</span></div><div class="line">                flags |= NGX_POST_EVENTS;</div><div class="line"></div><div class="line">            } <span class="keyword">else</span> {</div><div class="line">                <span class="comment">/* 如果获取不到锁需要结合timer事件设置下一次抢锁的时间 */</span></div><div class="line">                <span class="keyword">if</span> (<span class="variable">timer =</span>= NGX_TIMER_INFINITE</div><div class="line">                    || timer &gt; ngx_accept_mutex_delay)</div><div class="line">                {</div><div class="line">                    <span class="variable">timer =</span> ngx_accept_mutex_delay;</div><div class="line">                }</div><div class="line">            }</div><div class="line">        }</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="variable">delta =</span> ngx_current_msec;</div><div class="line">	</div><div class="line">	<span class="comment">/* 开始epoll收集处理事件 */</span></div><div class="line">    (void) ngx_process_events(cycle, timer, flags);</div><div class="line">	</div><div class="line">	<span class="comment">/* delta就是epoll_wait消耗掉的时间 */</span></div><div class="line">    <span class="variable">delta =</span> ngx_current_msec - delta;</div><div class="line">	</div><div class="line">    ngx_log_debug1(NGX_LOG_DEBUG_EVENT, cycle-&gt;log, <span class="number">0</span>,</div><div class="line">                   <span class="string">"timer delta: %M"</span>, delta);</div><div class="line">	<span class="comment">/* accept事件已经被加入到单独的任务队列并会被优先处理 */</span></div><div class="line">    ngx_event_process_posted(cycle, &ngx_posted_accept_events);</div><div class="line">	</div><div class="line">	<span class="comment">/* accept事件处理完之后先释放accept锁，因为其它事件的处理可能耗时较长，不要占着茅坑不睡觉 */</span></div><div class="line">    <span class="keyword">if</span> (ngx_accept_mutex_held) {</div><div class="line">        ngx_shmtx_unlock(&ngx_accept_mutex);</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (delta) {</div><div class="line">        ngx_event_expire_timers();</div><div class="line">    }</div><div class="line">	</div><div class="line">	<span class="comment">/* 之后可以放心处理其它事件了 */</span></div><div class="line">    ngx_event_process_posted(cycle, &ngx_posted_events);</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<h3 id="结语">结语</h3>
+<p>这里只是解释了nginx惊群问题的解决，负载均衡部分留到下文分解。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>最近的项目遇到了些麻烦，于是就到各家项目的源码里东逛逛西逛逛，看看有没有什么值得借鉴(chao)的东西，一来二去总算是找(chao)到了一些有用的东西，同时还无意间了解了下nginx的源码结构，其中nginx对于accept的处理倒是让我有种别开生面的赶脚(菜鸟本质暴露了…)，所以这里就写下来做个小小的记录。<br>]]>
+    
+    </summary>
+    
+      <category term="nginx" scheme="http://mafagan.sinaapp.com/tags/nginx/"/>
+    
+      <category term="mutex" scheme="http://mafagan.sinaapp.com/tags/mutex/"/>
+    
+      <category term="coding" scheme="http://mafagan.sinaapp.com/categories/coding/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[libev回调函数的参数传递问题]]></title>
+    <link href="http://mafagan.sinaapp.com/2015/01/15/libevargs/"/>
+    <id>http://mafagan.sinaapp.com/2015/01/15/libevargs/</id>
+    <published>2015-01-15T10:29:00.000Z</published>
+    <updated>2015-02-03T04:04:33.000Z</updated>
+    <content type="html"><![CDATA[<p>libev是一个类似于libevent的事件驱动型的网络库，之前用它来做项目的时候对它由很高的期望，谁知一上手就遇到了挺无语的问题，先来看下libev的官方示例：<br><a id="more"></a></p>
+<h3 id="Libev调用示例">Libev调用示例</h3>
+<p>首先定义一个I/O变量：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ev_io stdin_readable;</div></pre></td></tr></table></figure>
+
+<p>然后初始化I/O实例：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ev_io_init (&stdin_readable, stdin_readable_cb, STDIN_FILENO, EV_READ);</div></pre></td></tr></table></figure>
+
+<p>然后开始监听：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ev_io_start (loop, &stdin_readable);</div></pre></td></tr></table></figure>
+
+<p>最后生成处理事件的回调函数：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">static</span> <span class="keyword">void</span> stdin_readable_cb (<span class="keyword">struct</span> ev_loop *loop, ev_io *w, <span class="keyword">int</span> revents)</div></pre></td></tr></table></figure>
+
+<p>蛋不舒服的地方就是这个回调函数，三个参数都是libev留给自己调用的，想传个参数进去都没有办法，这个倒是显得libevent比较人性化，一个void*就把所有问题解决了。后来我猜想libev会不会在ev_io这个结构体里面给我留个小小的位置，于是就到libev的头文件里面找，然后就看到了这段代码:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> ev_io                                                                                                               </div><div class="line">{                                                                                                                                  </div><div class="line">    EV_WATCHER_LIST (ev_io)                                                                                                                            </div><div class="line">    <span class="keyword">int</span> fd;     <span class="comment">/* ro */</span></div><div class="line">    <span class="keyword">int</span> events; <span class="comment">/* ro */</span></div><div class="line">} ev_io;</div></pre></td></tr></table></figure>
+
+<p>好吧，遇到了个宏，我跳不就行了，跳完之后发现又有宏，好吧，我再跳，然后，还有宏！受不了了，直接出大招把所有宏替换掉：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">gcc -E /usr/include/ev.h -o Eev.h</div></pre></td></tr></table></figure>
+
+<p>到Eev.h里面找到下面这段代码:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> ev_io                                                                                                              </div><div class="line">{                                                                                                                                 </div><div class="line">    <span class="keyword">int</span> active; </div><div class="line">    <span class="keyword">int</span> pending; </div><div class="line">    <span class="keyword">int</span> priority; </div><div class="line">    <span class="keyword">void</span> *data; </div><div class="line">    <span class="keyword">void</span> (*cb)(<span class="keyword">struct</span> ev_loop *loop, <span class="keyword">struct</span> ev_io *w, <span class="keyword">int</span> revents); </div><div class="line">    <span class="keyword">struct</span> ev_watcher_list *next;</div><div class="line">    <span class="keyword">int</span> fd;</div><div class="line">    <span class="keyword">int</span> events;                                                                                                                     </div><div class="line">} ev_io;</div></pre></td></tr></table></figure>
+
+
+<p>不用猜就知道data变量就是我们要找的东东了。</p>
+<h3 id="后记">后记</h3>
+<p>后来我又去官网逛了一圈，发现下面这段话。。</p>
+<blockquote>
+<p>Each watcher has, by default, a void *data member that you can read or modify at any time: libev will completely ignore it. This can be used to associate arbitrary data with your watcher. </p>
+</blockquote>
+<p>官网还提供了一种很巧妙的方法，把ev_io结构放在自定义结构的首位，这样子ev_io实例的地址恰好就是自定义结构体实例的地址：</p>
+<blockquote>
+<p>If you need more data and don’t want to allocate memory separately and store a pointer to it in that data member, you can also “subclass” the watcher type and provide your own data:</p>
+</blockquote>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> my_io</div><div class="line">{</div><div class="line">    ev_io io;</div><div class="line">    <span class="keyword">int</span> otherfd;</div><div class="line">    <span class="keyword">void</span> *somedata;</div><div class="line">    <span class="keyword">struct</span> whatever *mostinteresting;</div><div class="line">};</div><div class="line"><span class="keyword">struct</span> my_io w;</div><div class="line">ev_io_init (&w.io, my_cb, fd, EV_READ);</div></pre></td></tr></table></figure>
+
+<blockquote>
+<p>And since your callback will be called with a pointer to the watcher, you can cast it back to your own type:</p>
+</blockquote>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">static</span> <span class="keyword">void</span> my_cb (<span class="keyword">struct</span> ev_loop *loop, ev_io *w_, <span class="keyword">int</span> revents)</div><div class="line">{</div><div class="line">    <span class="keyword">struct</span> my_io *w = (<span class="keyword">struct</span> my_io *)w_;</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>果然还是应了那句话，多看文档少作死。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>libev是一个类似于libevent的事件驱动型的网络库，之前用它来做项目的时候对它由很高的期望，谁知一上手就遇到了挺无语的问题，先来看下libev的官方示例：<br>]]>
+    
+    </summary>
+    
+      <category term="libev" scheme="http://mafagan.sinaapp.com/tags/libev/"/>
+    
+      <category term="callback" scheme="http://mafagan.sinaapp.com/tags/callback/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[小丑的蝙蝠侠——YouCompleteMe]]></title>
+    <link href="http://mafagan.sinaapp.com/2015/01/06/youcompleteme/"/>
+    <id>http://mafagan.sinaapp.com/2015/01/06/youcompleteme/</id>
+    <published>2015-01-06T07:36:00.000Z</published>
+    <updated>2015-02-03T04:04:33.000Z</updated>
+    <content type="html"><![CDATA[<p>YouCompleteMe(以下简称YCM), 目前vim上最优秀的补全插件。</p>
+<h3 id="简介">简介</h3>
+<p>vim上有很多补全插件，像ctags, cscope, neocomplete等。这些插件或多或少我都用过，总体感觉就是在瞎XX猜。相比之下，YCM与这些插件有着本质的区别，它基于语法分析，补全精准快速，即使是在百兆源码文件中使用也不会有显著的的效率下降，支持C家族全系语言，亲测还支持python、js等，可以说很大程度上解决了vim补全上的问题。<br><a id="more"></a><br>YCM由谷歌工程师Strahinja Val Markovic开发,使用的是C/S架构，在vim启动的时候服务端就会自动运行，正常情况下是感受不到YCM的存在的。YCM的语义分析使用的是clang(就是mac上的默认编译器)，C端使用C++开发，据说是为了提高效率，再由python进行封装，是不是觉得有点晕菜？没关系，其实你只要记住YCM很好用就行了。附一张效果图，btw，YCM还有补全路径、跳转到定义声明这些貌似不太起眼但是非常实用的功能，用起来感觉各种惊喜。<br><img src="http://ccxcu.img43.wal8.com/img43/507748_20150118041318/142245596241.gif" alt="ycm-demo"></p>
+<h3 id="mac下的安装">mac下的安装</h3>
+<p>YCM的语义分析用的是clang，因此在YCM在mac的安装也是最简单直接的。<br>使用vundle安装YCM，在.vimrc文件中添加以下代码：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Bundle <span class="string">'Valloric/YouCompleteMe'</span></div></pre></td></tr></table></figure>
+
+<p>打开vim输入</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">:BundleInstall</div></pre></td></tr></table></figure>
+
+
+
+<p>等待YCM下载完成。然后进入文件夹进行编译：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">cd</span> ~/.vim/bundle/YouCompleteMe</div><div class="line">./install --clang-completer --system-libclang</div></pre></td></tr></table></figure>
+
+<p>这里要注意一下<strong>—system-libclang</strong>这个参数，之前我编译的时候没有加入这个参数，YCM会下载默认的clang包导致编译出错，原因我也不清楚，不过加上之后YCM就会使用mac自带的clang，可以正常编译。</p>
+<p>YCM是基于macvim开发的，作者也是建议使用macvim以保证script的正确执行，不过貌似直接使用vim也不会有很大的问题，如果实在不放心，可以安装macvim之后在.bash_profile下加入以下代码:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">alias vim=<span class="string">'/Applications/MacVim.app/Contents/MacOS/Vim -v'</span></div></pre></td></tr></table></figure>
+
+<p>这样在命令行中使用的vim都会是macvim的vim。记住不要使用软连接，这样子macvim的vim没有办法正常启动。</p>
+<h3 id="配置">配置</h3>
+<p>YCM的默认配置文件是在.vim文件夹中的.ycm_extra_conf.py,在项目根目录下放同名文件就可以对项目进行特定的配置，其实最要就是配置头文件的路径，至于其它更详细的配置，可以参阅YCM的<a href="https://github.com/Valloric/YouCompleteMe" target="_blank" rel="external">项目主页</a>。</p>
+<h3 id="体验">体验</h3>
+<ul>
+<li>流畅，在大项目中尤其明显</li>
+<li>可对路径进行补全，这个大爱</li>
+<li>语法检测，说实话我觉得这个有点烦</li>
+<li>定义/声明跳转，YCM的声明跳转没有问题，不过定义跳转会时不时出现失败的情况，作者的解释是如果定义不在一个翻译单元内确实是无法补全的，这个也没有办法了</li>
+</ul>
+<h3 id="后记">后记</h3>
+<p>之前一直觉得YouCompleteMe这句话有点耳熟，直到前几天一不小心在Acfun上看到，终于知道是神马回事了。</p>
+<p><img src="http://ccxcu.img43.wal8.com/img43/507748_20150118041318/142245596287.jpg" alt="joker"></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>YouCompleteMe(以下简称YCM), 目前vim上最优秀的补全插件。</p>
+<h3 id="简介">简介</h3>
+<p>vim上有很多补全插件，像ctags, cscope, neocomplete等。这些插件或多或少我都用过，总体感觉就是在瞎XX猜。相比之下，YCM与这些插件有着本质的区别，它基于语法分析，补全精准快速，即使是在百兆源码文件中使用也不会有显著的的效率下降，支持C家族全系语言，亲测还支持python、js等，可以说很大程度上解决了vim补全上的问题。<br>]]>
+    
+    </summary>
+    
+      <category term="vim" scheme="http://mafagan.sinaapp.com/tags/vim/"/>
+    
+      <category term="coding" scheme="http://mafagan.sinaapp.com/categories/coding/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Libevent源码框架分析]]></title>
+    <link href="http://mafagan.sinaapp.com/2014/12/26/libevent%E6%BA%90%E7%A0%81%E6%A1%86%E6%9E%B6%E5%88%86%E6%9E%90/"/>
+    <id>http://mafagan.sinaapp.com/2014/12/26/libevent源码框架分析/</id>
+    <published>2014-12-26T02:25:00.000Z</published>
+    <updated>2015-02-03T04:04:33.000Z</updated>
+    <content type="html"><![CDATA[<p>libevent是一个事件触发(<strong>Reactor</strong>)的网络库，适用于windows、linux、bsd等多种平台，内部使用select、epoll、kqueue等系统调用管理事件机制。与其它网络库相比，libevent最大的特点就是很好的整合了I/O、timer以及signal的处理。之前我曾经在实习项目中用到过libevent，由于当时对整个libevent的运行方式不太熟悉，导致设计程序框架的时候多了很多不必要的考虑和编码，所以就在这里对libevent的核心部分进行一次剖析。<br><a id="more"></a></p>
+<h2 id="libevent的使用">libevent的使用</h2>
+<p>对于libevent来说，I/O, timer以及signal都是一个event，其内部已经封装好了对这些事件的处理，因此用户调用的时候只需要注册关心的事件以及事件的处理函数(即回调函数),然后等待事件的即可。问题的关键是libevent是怎么整合这些事件的？下面我来解释一下。</p>
+<p><strong>注：关于libevent的详细使用方法可以查阅<a href="http://www.wangafu.net/~nickm/libevent-book/" target="_blank" rel="external">官方手册</a>(貌似要番嫱。。)</strong></p>
+<h2 id="libevent的主体框架">libevent的主体框架</h2>
+<p>libevent的设计比较清晰明了，核心部分就是一个主循环，负责监控各个事件，并维护一个活跃链表(<strong>active list</strong>)，对于就绪的事件，libevent就把它插入到活跃链表中，然后按照优先级顺序分别执行活跃链表中得事件的注册回调函数。</p>
+<p>从主循环入口开始，程序要先先检测退出标识，若有则退出循环，否则继续。记录当前时间，获取timer事件中最早到期事件的时间，这里说下timer事件存储的数据结构。timer中得事件根据超时时间的大小使用小根堆得方式存储，因此插入和删除都是O(logn)的时间复杂度，而获取最早超时的事件只需要直接读取堆顶得数据即可。获取最早超时的时间和当前时间的时间差作为epoll等函数的超时时间，这就避免了因为没有I/O操作导致程序错过了执行timer事件的情况。处理完I/O事件之后，就可以及时地继续处理timer事件了。</p>
+<p>下面我们来看一下源代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">while</span> (!done) {</div><div class="line">    base-&gt;event_continue = <span class="number">0</span>;</div><div class="line"></div><div class="line">    <span class="comment">/* Terminate the loop if we have been asked to */</span></div><div class="line">    <span class="keyword">if</span> (base-&gt;event_gotterm) {</div><div class="line">        <span class="keyword">break</span>;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (base-&gt;event_break) {</div><div class="line">        <span class="keyword">break</span>;</div><div class="line">    }</div><div class="line"></div><div class="line">    timeout_correct(base, &tv);</div><div class="line"></div><div class="line">    tv_p = &tv;</div><div class="line">    <span class="keyword">if</span> (!N_ACTIVE_CALLBACKS(base) && !(flags & EVLOOP_NONBLOCK)) {</div><div class="line">        timeout_next(base, &tv_p);</div><div class="line">    } <span class="keyword">else</span> {</div><div class="line">        <span class="comment">/*</span></div><div class="line">         * if we have active events, we just poll new events</div><div class="line">         * without waiting.</div><div class="line">         */</div><div class="line">        evutil_timerclear(&tv);</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="comment">/* If we have no events, we just exit */</span></div><div class="line">    <span class="keyword">if</span> (!event_haveevents(base) && !N_ACTIVE_CALLBACKS(base)) {</div><div class="line">        event_debug((<span class="string">"%s: no events registered."</span>, __func__));</div><div class="line">        retval = <span class="number">1</span>;</div><div class="line">        <span class="keyword">goto</span> done;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="comment">/* update last old time */</span></div><div class="line">    gettime(base, &base-&gt;event_tv);</div><div class="line"></div><div class="line">    clear_time_cache(base);</div><div class="line"></div><div class="line">    <span class="comment">/* 等待I/O事件，并设定最大等待时间 */</span></div><div class="line">    res = evsel-&gt;dispatch(base, tv_p);</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (res == -<span class="number">1</span>) {</div><div class="line">        event_debug((<span class="string">"%s: dispatch returned unsuccessfully."</span>,</div><div class="line">                    __func__));</div><div class="line">        retval = -<span class="number">1</span>;</div><div class="line">        <span class="keyword">goto</span> done;</div><div class="line">    }</div><div class="line"></div><div class="line">    update_time_cache(base);</div><div class="line"></div><div class="line">    <span class="comment">/* 处理到时事件 */</span></div><div class="line">    timeout_process(base);</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (N_ACTIVE_CALLBACKS(base)) {</div><div class="line"></div><div class="line">        <span class="comment">/* 处理活跃链表中得事件 */</span></div><div class="line">        <span class="keyword">int</span> n = event_process_active(base);</div><div class="line">        <span class="keyword">if</span> ((flags & EVLOOP_ONCE)</div><div class="line">                && N_ACTIVE_CALLBACKS(base) == <span class="number">0</span></div><div class="line">                && n != <span class="number">0</span>)</div><div class="line">            done = <span class="number">1</span>;</div><div class="line">    } <span class="keyword">else</span> <span class="keyword">if</span> (flags & EVLOOP_NONBLOCK)</div><div class="line">        done = <span class="number">1</span>;</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>主循环的框架如下图:</p>
+<p><img src="http://ccxcu.img43.wal8.com/img43/507748_20150118041318/142152564418.jpg" alt="libevent_loop"></p>
+<p>上文只是解释了I/O和timer的工作流程，还有signal部分尚未讲解。signal对于程序来说是完全异步的，你完全不知道注册的回调函数会在什么时候调用，那么libevent是怎么把signal整合进去的呢？这也是我一开始对libevent感到最好奇的地方。</p>
+<h2 id="libevent对signal的处理">libevent对signal的处理</h2>
+<p>细心的朋友可能已经在上面的框架图中找到了答案，没错，libevent把signal信号转换成了I/O数据。具体的方法就是使用socket pair进行数据交流。在实际操作中，生成一对socket, 其中一个为读socket，另一个为写socket，写socket得数据自然是流向读socket。在捕捉到信号之后，libevent就会找到这个写socket，向里面写入一个8位的数据，值就是信号值。当然，在用户注册了监控的信号之后，libevent就已经把读socket列入监控的范围，在下一次epoll_wait操作的时候自然就可以获取信号的相关信息。</p>
+<p>signal部分的源代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">static</span> <span class="keyword">void</span> __cdecl evsig_handler(<span class="keyword">int</span> sig)</div><div class="line">{</div><div class="line">    <span class="keyword">int</span> save_errno = errno;</div><div class="line"><span class="preprocessor">#ifdef WIN32</span></div><div class="line">    <span class="keyword">int</span> socket_errno = EVUTIL_SOCKET_ERROR();</div><div class="line"><span class="preprocessor">#<span class="keyword">endif</span></span></div><div class="line">    ev_uint8_t msg;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (evsig_base == NULL) {</div><div class="line">        event_warnx(</div><div class="line">                <span class="string">"%s: received signal %d, but have no base configured"</span>,</div><div class="line">                __func__, sig);</div><div class="line">        <span class="keyword">return</span>;</div><div class="line">    }</div><div class="line"></div><div class="line"><span class="preprocessor">#ifndef _EVENT_HAVE_SIGACTION</span></div><div class="line">    signal(sig, evsig_handler);</div><div class="line"><span class="preprocessor">#<span class="keyword">endif</span></span></div><div class="line"></div><div class="line">    <span class="comment">/* Wake up our notification mechanism */</span></div><div class="line">    msg = sig;</div><div class="line">    send(evsig_base_fd, (<span class="keyword">char</span>*)&msg, <span class="number">1</span>, <span class="number">0</span>);</div><div class="line">    errno = save_errno;</div><div class="line"><span class="preprocessor">#ifdef WIN32</span></div><div class="line">    EVUTIL_SET_SOCKET_ERROR(socket_errno);</div><div class="line"><span class="preprocessor">#<span class="keyword">endif</span></span></div><div class="line">}</div></pre></td></tr></table></figure>
+
+<h1 id="总结">总结</h1>
+<p>libevent的代码放置比较随意，都在根目录下，但是整体设计还是比较简洁明了的。libevent的想法是想提供一套全面跨平台的网络I/O解决方案，因此性能也没有达到极致。当然，我认为libevent在设计上最大的缺点就是使用了全局变量。因此，我更建议使用libev，从名字看就知道，两者的功能相近，设计相似(怎么有点某鹅的赶脚。。)，但是libev有着更少的bug，去掉了该死的全局变量，专注于posix，秉承unix“一个程序只做一件事，并做好它”，因此我在接下来的项目中也会采用libev。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>libevent是一个事件触发(<strong>Reactor</strong>)的网络库，适用于windows、linux、bsd等多种平台，内部使用select、epoll、kqueue等系统调用管理事件机制。与其它网络库相比，libevent最大的特点就是很好的整合了I/O、timer以及signal的处理。之前我曾经在实习项目中用到过libevent，由于当时对整个libevent的运行方式不太熟悉，导致设计程序框架的时候多了很多不必要的考虑和编码，所以就在这里对libevent的核心部分进行一次剖析。<br>]]>
+    
+    </summary>
+    
+      <category term="libevent" scheme="http://mafagan.sinaapp.com/tags/libevent/"/>
+    
+      <category term="unix" scheme="http://mafagan.sinaapp.com/tags/unix/"/>
+    
+      <category term="signal" scheme="http://mafagan.sinaapp.com/tags/signal/"/>
+    
+      <category term="coding" scheme="http://mafagan.sinaapp.com/categories/coding/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Article test]]></title>
+    <link href="http://mafagan.sinaapp.com/2014/12/24/article/"/>
+    <id>http://mafagan.sinaapp.com/2014/12/24/article/</id>
+    <published>2014-12-24T11:38:00.000Z</published>
+    <updated>2015-02-03T04:04:33.000Z</updated>
+    <content type="html"><![CDATA[<h1 id="Mou">Mou</h1>
+<h2 id="Overview">Overview</h2>
+<p><strong>Mou</strong>, the missing Markdown editor for <em>web developers</em>.</p>
+<h3 id="Syntax">Syntax</h3>
+<h4 id="Strong_and_Emphasize">Strong and Emphasize</h4>
+<p><strong>strong</strong> or <strong>strong</strong> ( Cmd + B )</p>
+<p><em>emphasize</em> or <em>emphasize</em> ( Cmd + I )</p>
+<p><strong>Sometimes I want a lot of text to be bold.<br>Like, seriously, a <em>LOT</em> of text</strong></p>
+<h4 id="Blockquotes">Blockquotes</h4>
+<blockquote>
+<p>Right angle brackets &gt; are used for block quotes.<br><a id="more"></a></p>
+<h4 id="Links_and_Email">Links and Email</h4>
+</blockquote>
+<p>An email <a href="&#x6d;&#x61;&#x69;&#108;&#116;&#111;&#58;&#x65;&#120;&#x61;&#x6d;&#x70;&#108;&#x65;&#64;&#x65;&#120;&#97;&#109;&#x70;&#x6c;&#101;&#x2e;&#x63;&#111;&#109;">&#x65;&#120;&#x61;&#x6d;&#x70;&#108;&#x65;&#64;&#x65;&#120;&#97;&#109;&#x70;&#x6c;&#101;&#x2e;&#x63;&#111;&#109;</a> link.</p>
+<p>Simple inline link <a href="http://chenluois.com" target="_blank" rel="external">http://chenluois.com</a>, another inline link <a href="http://25.io/smaller/" target="_blank" rel="external">Smaller</a>, one more inline link with title <a href="http://resizesafari.com" title="a Safari extension" target="_blank" rel="external">Resize</a>.</p>
+<p>A <a href="http://25.io/mou/" title="Markdown editor on Mac OS X" target="_blank" rel="external">reference style</a> link. Input id, then anywhere in the doc, define the link with corresponding id:</p>
+<p>Titles ( or called tool tips ) in the links are optional.</p>
+<h4 id="Images">Images</h4>
+<p>An inline image, title is optional.</p>
+<p>A Resize reference style image.</p>
+<h4 id="Inline_code_and_Block_code">Inline code and Block code</h4>
+<p>Inline code are surround by <code>backtick</code> key. To create a block code:</p>
+<pre><code>Indent <span class="keyword">each</span> <span class="built_in">line</span> <span class="keyword">by</span> <span class="keyword">at</span> least <span class="number">1</span> <span class="constant">tab</span>, <span class="operator">or</span> <span class="number">4</span> spaces.
+var Mou = exactlyTheAppIwant; 
+</code></pre><h4 id="Ordered_Lists">Ordered Lists</h4>
+<p>Ordered lists are created using “1.” + Space:</p>
+<ol>
+<li>Ordered list item</li>
+<li>Ordered list item</li>
+<li>Ordered list item</li>
+</ol>
+<h4 id="Unordered_Lists">Unordered Lists</h4>
+<p>Unordered list are created using “*” + Space:</p>
+<ul>
+<li>Unordered list item</li>
+<li>Unordered list item</li>
+<li>Unordered list item </li>
+</ul>
+<p>Or using “-“ + Space:</p>
+<ul>
+<li>Unordered list item</li>
+<li>Unordered list item</li>
+<li>Unordered list item</li>
+</ul>
+<h4 id="Hard_Linebreak">Hard Linebreak</h4>
+<p>End a line with two or more spaces will create a hard linebreak, called <code>&lt;br /&gt;</code> in HTML. ( Control + Return )<br>Above line ended with 2 spaces.</p>
+<h4 id="Horizontal_Rules">Horizontal Rules</h4>
+<p>Three or more asterisks or dashes:</p>
+<hr>
+<hr>
+<hr>
+<h4 id="Headers">Headers</h4>
+<p>Setext-style:</p>
+<h1 id="This_is_H1">This is H1</h1>
+<h2 id="This_is_H2">This is H2</h2>
+<p>atx-style:</p>
+<h1 id="This_is_H1-1">This is H1</h1>
+<h2 id="This_is_H2-1">This is H2</h2>
+<h3 id="This_is_H3">This is H3</h3>
+<h4 id="This_is_H4">This is H4</h4>
+<h5 id="This_is_H5">This is H5</h5>
+<h6 id="This_is_H6">This is H6</h6>
+<h3 id="Extra_Syntax">Extra Syntax</h3>
+<h4 id="Footnotes">Footnotes</h4>
+<p>Footnotes work mostly like reference-style links. A footnote is made of two things: a marker in the text that will become a superscript number; a footnote definition that will be placed in a list of footnotes at the end of the document. A footnote looks like this:</p>
+<p>That’s some text with a footnote.[^1]</p>
+<p>[^1]: And that’s the footnote.</p>
+<h4 id="Strikethrough">Strikethrough</h4>
+<p>Wrap with 2 tilde characters:</p>
+<p><del>Strikethrough</del></p>
+<h4 id="Fenced_Code_Blocks">Fenced Code Blocks</h4>
+<p>Start with a line containing 3 or more backticks, and ends with the first line with the same number of backticks:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Fenced code blocks are like Stardard Markdown’s regular code</div><div class="line">blocks, except that they’re <span class="operator">not</span> indented <span class="operator">and</span> instead rely <span class="command"><span class="keyword">on</span></span></div><div class="line"><span class="operator">a</span> start <span class="operator">and</span> <span class="function"><span class="keyword">end</span> <span class="title">fence</span> <span class="title">lines</span> <span class="title">to</span> <span class="title">delimit</span> <span class="title">the</span> <span class="title">code</span> <span class="title">block</span>.</span></div></pre></td></tr></table></figure>
+
+<h4 id="Tables">Tables</h4>
+<p>A simple table looks like this:</p>
+<table>
+<thead>
+<tr>
+<th>First Header</th>
+<th>Second Header</th>
+<th>Third Header</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Content Cell</td>
+<td>Content Cell</td>
+<td>Content Cell</td>
+</tr>
+<tr>
+<td>Content Cell</td>
+<td>Content Cell</td>
+<td>Content Cell</td>
+</tr>
+</tbody>
+</table>
+<p>If you wish, you can add a leading and tailing pipe to each line of the table:</p>
+<table>
+<thead>
+<tr>
+<th>First Header</th>
+<th>Second Header</th>
+<th>Third Header</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Content Cell</td>
+<td>Content Cell</td>
+<td>Content Cell</td>
+</tr>
+<tr>
+<td>Content Cell</td>
+<td>Content Cell</td>
+<td>Content Cell</td>
+</tr>
+</tbody>
+</table>
+<p>Specify alignment for each column by adding colons to separator lines:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">First Header</th>
+<th style="text-align:center">Second Header</th>
+<th style="text-align:right">Third Header</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Left</td>
+<td style="text-align:center">Center</td>
+<td style="text-align:right">Right</td>
+</tr>
+<tr>
+<td style="text-align:left">Left</td>
+<td style="text-align:center">Center</td>
+<td style="text-align:right">Right</td>
+</tr>
+</tbody>
+</table>
+<h3 id="Shortcuts">Shortcuts</h3>
+<h4 id="View">View</h4>
+<ul>
+<li>Toggle live preview: Shift + Cmd + I</li>
+<li>Toggle Words Counter: Shift + Cmd + W</li>
+<li>Toggle Transparent: Shift + Cmd + T</li>
+<li>Toggle Floating: Shift + Cmd + F</li>
+<li>Left/Right = 1/1: Cmd + 0</li>
+<li>Left/Right = 3/1: Cmd + +</li>
+<li>Left/Right = 1/3: Cmd + -</li>
+<li>Toggle Writing orientation: Cmd + L</li>
+<li>Toggle fullscreen: Control + Cmd + F</li>
+</ul>
+<h4 id="Actions">Actions</h4>
+<ul>
+<li>Copy HTML: Option + Cmd + C</li>
+<li>Strong: Select text, Cmd + B</li>
+<li>Emphasize: Select text, Cmd + I</li>
+<li>Inline Code: Select text, Cmd + K</li>
+<li>Strikethrough: Select text, Cmd + U</li>
+<li>Link: Select text, Control + Shift + L</li>
+<li>Image: Select text, Control + Shift + I</li>
+<li>Select Word: Control + Option + W</li>
+<li>Select Line: Shift + Cmd + L</li>
+<li>Select All: Cmd + A</li>
+<li>Deselect All: Cmd + D</li>
+<li>Convert to Uppercase: Select text, Control + U</li>
+<li>Convert to Lowercase: Select text, Control + Shift + U</li>
+<li>Convert to Titlecase: Select text, Control + Option + U</li>
+<li>Convert to List: Select lines, Control + L</li>
+<li>Convert to Blockquote: Select lines, Control + Q</li>
+<li>Convert to H1: Cmd + 1</li>
+<li>Convert to H2: Cmd + 2</li>
+<li>Convert to H3: Cmd + 3</li>
+<li>Convert to H4: Cmd + 4</li>
+<li>Convert to H5: Cmd + 5</li>
+<li>Convert to H6: Cmd + 6</li>
+<li>Convert Spaces to Tabs: Control + [</li>
+<li>Convert Tabs to Spaces: Control + ]</li>
+<li>Insert Current Date: Control + Shift + 1</li>
+<li>Insert Current Time: Control + Shift + 2</li>
+<li>Insert entity &lt;: Control + Shift + ,</li>
+<li>Insert entity &gt;: Control + Shift + .</li>
+<li>Insert entity &amp;: Control + Shift + 7</li>
+<li>Insert entity Space: Control + Shift + Space</li>
+<li>Insert Scriptogr.am Header: Control + Shift + G</li>
+<li>Shift Line Left: Select lines, Cmd + [</li>
+<li>Shift Line Right: Select lines, Cmd + ]</li>
+<li>New Line: Cmd + Return</li>
+<li>Comment: Cmd + /</li>
+<li>Hard Linebreak: Control + Return</li>
+</ul>
+<h4 id="Edit">Edit</h4>
+<ul>
+<li>Auto complete current word: Esc</li>
+<li>Find: Cmd + F</li>
+<li>Close find bar: Esc</li>
+</ul>
+<h4 id="Post">Post</h4>
+<ul>
+<li>Post on Scriptogr.am: Control + Shift + S</li>
+<li>Post on Tumblr: Control + Shift + T</li>
+</ul>
+<h4 id="Export">Export</h4>
+<ul>
+<li>Export HTML: Option + Cmd + E</li>
+<li>Export PDF:  Option + Cmd + P</li>
+</ul>
+<h3 id="And_more?">And more?</h3>
+<p>Don’t forget to check Preferences, lots of useful options are there.</p>
+<p>Follow <a href="https://twitter.com/mou" target="_blank" rel="external">@Mou</a> on Twitter for the latest news.</p>
+<p>For feedback, use the menu <code>Help</code> - <code>Send Feedback</code></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h1 id="Mou">Mou</h1>
+<h2 id="Overview">Overview</h2>
+<p><strong>Mou</strong>, the missing Markdown editor for <em>web developers</em>.</p>
+<h3 id="Syntax">Syntax</h3>
+<h4 id="Strong_and_Emphasize">Strong and Emphasize</h4>
+<p><strong>strong</strong> or <strong>strong</strong> ( Cmd + B )</p>
+<p><em>emphasize</em> or <em>emphasize</em> ( Cmd + I )</p>
+<p><strong>Sometimes I want a lot of text to be bold.<br>Like, seriously, a <em>LOT</em> of text</strong></p>
+<h4 id="Blockquotes">Blockquotes</h4>
+<blockquote>
+<p>Right angle brackets &gt; are used for block quotes.<br>]]>
+    
+    </summary>
+    
+      <category term="article" scheme="http://mafagan.sinaapp.com/tags/article/"/>
+    
+      <category term="article" scheme="http://mafagan.sinaapp.com/categories/article/"/>
+    
+  </entry>
+  
+</feed>
