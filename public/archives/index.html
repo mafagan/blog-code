@@ -58,6 +58,50 @@
     <header>
       
         <div class="icon"></div>
+        <time datetime="2015-02-16T16:56:00.000Z"><a href="/2015/02/17/nested-type/">2月 17 2015</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2015/02/17/nested-type/">《STL源码剖析》读书笔记(二)——typename与嵌套依赖类型</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>在C++泛型编程中，template中的参数主要有两种声明方法，一种是typename，另一种是class。在这种情况下，typename和class是没有区别的，也就是说是使用typename还是class可以根据自己的喜好选择。</p>
+<h2 id="typename在嵌套类型中的使用">typename在嵌套类型中的使用</h2>
+<p>typename在template中的作用可能是最为大家所熟知的，但是反倒是typename最主要的作用大家(其实就是我，不然也不会有这篇笔记啦。。)用得比较少，先看一下下面这段代码</p>
+<figure class="highlight C++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">class</span> Parm&gt;</div><div class="line">Parm minus( Parm* instance )</div><div class="line">{</div><div class="line">    Parm::name * p; <span class="comment">// 这是一个指针声明还是乘法?</span></div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>假设传入instance的类型如下：</p>
+<figure class="highlight C++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> Real</div><div class="line">{</div><div class="line">    <span class="keyword">typedef</span> <span class="keyword">int</span> name;</div><div class="line">    ...</div><div class="line">};</div></pre></td></tr></table></figure>
+
+<p>像这种情况，name会被编译器视作Parm类的静态变量，但是很明显，<code>Parm::name *p</code>的本意是想声明一个指针的，这时候就需要在前面加一个<code>typename</code>，这样编译器就知道<code>Parm::name</code>是一个类型了。</p>
+<figure class="highlight C++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">class</span> Parm&gt;</div><div class="line">Parm minus( Parm* instance )</div><div class="line">{</div><div class="line">    <span class="keyword">typename</span> Parm::name * p; <span class="comment">// 这是一个指针声明</span></div><div class="line">}</div></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
         <time datetime="2015-02-16T10:53:00.000Z"><a href="/2015/02/16/associated-types/">2月 16 2015</a></time>
       
       
@@ -418,7 +462,7 @@
 <div class="widget tagcloud">
   <h3 class="title">标签云</h3>
   <div class="entry">
-    <a href="/tags/C/" style="font-size: 10.00px;">C++</a><a href="/tags/STL/" style="font-size: 10.00px;">STL</a><a href="/tags/algorithm/" style="font-size: 10.00px;">algorithm</a><a href="/tags/article/" style="font-size: 10.00px;">article</a><a href="/tags/buffer/" style="font-size: 10.00px;">buffer</a><a href="/tags/callback/" style="font-size: 10.00px;">callback</a><a href="/tags/iterator/" style="font-size: 10.00px;">iterator</a><a href="/tags/libev/" style="font-size: 10.00px;">libev</a><a href="/tags/libevent/" style="font-size: 10.00px;">libevent</a><a href="/tags/linux/" style="font-size: 10.00px;">linux</a><a href="/tags/mutex/" style="font-size: 20.00px;">mutex</a><a href="/tags/nginx/" style="font-size: 20.00px;">nginx</a><a href="/tags/signal/" style="font-size: 10.00px;">signal</a><a href="/tags/udp/" style="font-size: 10.00px;">udp</a><a href="/tags/unix/" style="font-size: 10.00px;">unix</a><a href="/tags/vim/" style="font-size: 10.00px;">vim</a>
+    <a href="/tags/C/" style="font-size: 20.00px;">C++</a><a href="/tags/STL/" style="font-size: 20.00px;">STL</a><a href="/tags/algorithm/" style="font-size: 10.00px;">algorithm</a><a href="/tags/article/" style="font-size: 10.00px;">article</a><a href="/tags/buffer/" style="font-size: 10.00px;">buffer</a><a href="/tags/callback/" style="font-size: 10.00px;">callback</a><a href="/tags/iterator/" style="font-size: 10.00px;">iterator</a><a href="/tags/libev/" style="font-size: 10.00px;">libev</a><a href="/tags/libevent/" style="font-size: 10.00px;">libevent</a><a href="/tags/linux/" style="font-size: 10.00px;">linux</a><a href="/tags/mutex/" style="font-size: 20.00px;">mutex</a><a href="/tags/nested-type/" style="font-size: 10.00px;">nested type</a><a href="/tags/nginx/" style="font-size: 20.00px;">nginx</a><a href="/tags/signal/" style="font-size: 10.00px;">signal</a><a href="/tags/udp/" style="font-size: 10.00px;">udp</a><a href="/tags/unix/" style="font-size: 10.00px;">unix</a><a href="/tags/vim/" style="font-size: 10.00px;">vim</a>
   </div>
 </div>
 
@@ -427,6 +471,10 @@
 <div class="widget tag">
   <h3 class="title">最新文章</h3>
   <ul class="entry">
+    
+      <li>
+        <a href="/2015/02/17/nested-type/">《STL源码剖析》读书笔记(二)——typename与嵌套依赖类型</a>
+      </li>
     
       <li>
         <a href="/2015/02/16/associated-types/">《STL源码剖析》读书笔记(一)——迭代器的相应类型</a>
@@ -444,10 +492,6 @@
         <a href="/2015/01/31/nginx-mutex-analysis/">nginx中的accept-mutex源码分析(一)</a>
       </li>
     
-      <li>
-        <a href="/2015/01/15/libevargs/">libev回调函数的参数传递问题</a>
-      </li>
-    
   </ul>
 </div>
 
@@ -457,9 +501,9 @@
   <h3 class="title">标签</h3>
   <ul class="entry">
   
-    <li><a href="/tags/C/">C++</a><small>1</small></li>
+    <li><a href="/tags/C/">C++</a><small>2</small></li>
   
-    <li><a href="/tags/STL/">STL</a><small>1</small></li>
+    <li><a href="/tags/STL/">STL</a><small>2</small></li>
   
     <li><a href="/tags/algorithm/">algorithm</a><small>1</small></li>
   
@@ -478,6 +522,8 @@
     <li><a href="/tags/linux/">linux</a><small>1</small></li>
   
     <li><a href="/tags/mutex/">mutex</a><small>2</small></li>
+  
+    <li><a href="/tags/nested-type/">nested type</a><small>1</small></li>
   
     <li><a href="/tags/nginx/">nginx</a><small>2</small></li>
   

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>vim | 坚强的鸡蛋</title>
+  <title>《STL源码剖析》读书笔记(二)——typename与嵌套依赖类型 | 坚强的鸡蛋</title>
   <meta name="author" content="Huaguan, Ma">
   
   <meta name="description" content="蛋爷的博客，攻城狮的窝，优雅的外在，科学的内心，互联网中的水吧，这里有一只坚强的鸡蛋！">
@@ -11,7 +11,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  
+  <meta property="og:title" content="《STL源码剖析》读书笔记(二)——typename与嵌套依赖类型"/>
   <meta property="og:site_name" content="坚强的鸡蛋"/>
 
   
@@ -47,39 +47,50 @@
 <div class="clearfix"></div>
 </header>
   <div id="content" class="inner">
-    <div id="main-col" class="alignleft"><div id="wrapper">
-<h2 class="archive-title tag">vim</h2>
-
-
-  
-    <article class="post">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
   
   <div class="post-content">
     <header>
       
         <div class="icon"></div>
-        <time datetime="2015-01-06T07:36:00.000Z"><a href="/2015/01/06/youcompleteme/">1月 6 2015</a></time>
+        <time datetime="2015-02-16T16:56:00.000Z"><a href="/2015/02/17/nested-type/">2月 17 2015</a></time>
       
       
   
-    <h1 class="title"><a href="/2015/01/06/youcompleteme/">小丑的蝙蝠侠——YouCompleteMe</a></h1>
+    <h1 class="title">《STL源码剖析》读书笔记(二)——typename与嵌套依赖类型</h1>
   
 
     </header>
     <div class="entry">
       
-        <p>YouCompleteMe(以下简称YCM), 目前vim上最优秀的补全插件。</p>
-<h3 id="简介">简介</h3>
-<p>vim上有很多补全插件，像ctags, cscope, neocomplete等。这些插件或多或少我都用过，总体感觉就是在瞎XX猜。相比之下，YCM与这些插件有着本质的区别，它基于语法分析，补全精准快速，即使是在百兆源码文件中使用也不会有显著的的效率下降，支持C家族全系语言，亲测还支持python、js等，可以说很大程度上解决了vim补全上的问题。<br>
+        <p>在C++泛型编程中，template中的参数主要有两种声明方法，一种是typename，另一种是class。在这种情况下，typename和class是没有区别的，也就是说是使用typename还是class可以根据自己的喜好选择。</p>
+<h2 id="typename在嵌套类型中的使用">typename在嵌套类型中的使用</h2>
+<p>typename在template中的作用可能是最为大家所熟知的，但是反倒是typename最主要的作用大家(其实就是我，不然也不会有这篇笔记啦。。)用得比较少，先看一下下面这段代码</p>
+<figure class="highlight C++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">class</span> Parm&gt;</div><div class="line">Parm minus( Parm* instance )</div><div class="line">{</div><div class="line">    Parm::name * p; <span class="comment">// 这是一个指针声明还是乘法?</span></div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>假设传入instance的类型如下：</p>
+<figure class="highlight C++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> Real</div><div class="line">{</div><div class="line">    <span class="keyword">typedef</span> <span class="keyword">int</span> name;</div><div class="line">    ...</div><div class="line">};</div></pre></td></tr></table></figure>
+
+<p>像这种情况，name会被编译器视作Parm类的静态变量，但是很明显，<code>Parm::name *p</code>的本意是想声明一个指针的，这时候就需要在前面加一个<code>typename</code>，这样编译器就知道<code>Parm::name</code>是一个类型了。</p>
+<figure class="highlight C++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">class</span> Parm&gt;</div><div class="line">Parm minus( Parm* instance )</div><div class="line">{</div><div class="line">    <span class="keyword">typename</span> Parm::name * p; <span class="comment">// 这是一个指针声明</span></div><div class="line">}</div></pre></td></tr></table></figure>
+
+
       
     </div>
     <footer>
       
         
-          <div class="alignleft">
-            <a href="/2015/01/06/youcompleteme/#more" class="more-link">阅读全文</a>
-          </div>
+  
+  <div class="categories">
+    <a href="/categories/coding/">coding</a>
+  </div>
+
         
+  
+  <div class="tags">
+    <a href="/tags/C/">C++</a>, <a href="/tags/STL/">STL</a>, <a href="/tags/nested-type/">nested type</a>
+  </div>
+
         
       
       <div class="clearfix"></div>
@@ -89,16 +100,30 @@
 
 
 
+    <nav id="pagination" >
+        
+                
+                    <a href="/2015/02/16/associated-types/" class="alignright next" >下一页</a>
+                        
+                        <div class="clearfix"></div>
+                        </nav>
 
-  
 
-  <nav id="pagination">
-  
-  
-  <div class="clearfix"></div>
-</nav>
+    <section id="comment">
+       <div class="ds-thread" data-thread-key="2015/02/17/nested-type/" data-title="《STL源码剖析》读书笔记(二)——typename与嵌套依赖类型" data-url="http://mafagan.sinaapp.com/2015/02/17/nested-type/"></div>
 
-
+        <script type="text/javascript">
+        var duoshuoQuery = {short_name:"mafagan"};
+    (function() {
+     var ds = document.createElement('script');
+     ds.type = 'text/javascript';ds.async = true;
+     ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+     ds.charset = 'UTF-8';
+     (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+     })();
+    </script>
+    </section>
 
 
 </div></div>

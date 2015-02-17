@@ -4,7 +4,7 @@
   <subtitle><![CDATA[Collect the dots in your life.]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://mafagan.sinaapp.com/"/>
-  <updated>2015-02-16T15:16:36.666Z</updated>
+  <updated>2015-02-17T10:18:10.615Z</updated>
   <id>http://mafagan.sinaapp.com/</id>
   
   <author>
@@ -13,6 +13,39 @@
   </author>
   
   <generator uri="http://zespia.tw/hexo/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[《STL源码剖析》读书笔记(二)——typename与嵌套依赖类型]]></title>
+    <link href="http://mafagan.sinaapp.com/2015/02/17/nested-type/"/>
+    <id>http://mafagan.sinaapp.com/2015/02/17/nested-type/</id>
+    <published>2015-02-16T16:56:00.000Z</published>
+    <updated>2015-02-17T10:18:02.000Z</updated>
+    <content type="html"><![CDATA[<p>在C++泛型编程中，template中的参数主要有两种声明方法，一种是typename，另一种是class。在这种情况下，typename和class是没有区别的，也就是说是使用typename还是class可以根据自己的喜好选择。</p>
+<h2 id="typename在嵌套类型中的使用">typename在嵌套类型中的使用</h2>
+<p>typename在template中的作用可能是最为大家所熟知的，但是反倒是typename最主要的作用大家(其实就是我，不然也不会有这篇笔记啦。。)用得比较少，先看一下下面这段代码</p>
+<figure class="highlight C++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">class</span> Parm&gt;</div><div class="line">Parm minus( Parm* instance )</div><div class="line">{</div><div class="line">    Parm::name * p; <span class="comment">// 这是一个指针声明还是乘法?</span></div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>假设传入instance的类型如下：</p>
+<figure class="highlight C++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> Real</div><div class="line">{</div><div class="line">    <span class="keyword">typedef</span> <span class="keyword">int</span> name;</div><div class="line">    ...</div><div class="line">};</div></pre></td></tr></table></figure>
+
+<p>像这种情况，name会被编译器视作Parm类的静态变量，但是很明显，<code>Parm::name *p</code>的本意是想声明一个指针的，这时候就需要在前面加一个<code>typename</code>，这样编译器就知道<code>Parm::name</code>是一个类型了。</p>
+<figure class="highlight C++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span> &lt;<span class="keyword">class</span> Parm&gt;</div><div class="line">Parm minus( Parm* instance )</div><div class="line">{</div><div class="line">    <span class="keyword">typename</span> Parm::name * p; <span class="comment">// 这是一个指针声明</span></div><div class="line">}</div></pre></td></tr></table></figure>
+
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>在C++泛型编程中，template中的参数主要有两种声明方法，一种是typename，另一种是class。在这种情况下，typename和class是没有区别的，也就是说是使用typename还是class可以根据自己的喜好选择。</p>
+<h2 id="typename]]>
+    </summary>
+    
+      <category term="C++" scheme="http://mafagan.sinaapp.com/tags/C/"/>
+    
+      <category term="STL" scheme="http://mafagan.sinaapp.com/tags/STL/"/>
+    
+      <category term="nested type" scheme="http://mafagan.sinaapp.com/tags/nested-type/"/>
+    
+      <category term="coding" scheme="http://mafagan.sinaapp.com/categories/coding/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[《STL源码剖析》读书笔记(一)——迭代器的相应类型]]></title>
