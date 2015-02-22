@@ -23,6 +23,16 @@
   <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
   <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
   
+<script>
+  var _hmt = _hmt || [];
+  (function() {
+    var hm = document.createElement("script");
+    hm.src = "//hm.baidu.com/hm.js?09c1001b947c5a5aa5e973344ae4b2e0";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
+</script>
+
 </head>
 
 
@@ -49,6 +59,82 @@
   <div id="content" class="inner">
     <div id="main-col" class="alignleft"><div id="wrapper">
 <h2 class="archive-title">归档</h2>
+
+
+  
+    <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-02-21T08:29:00.000Z"><a href="/2015/02/21/wechat-lishi/">2月 21 2015</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2015/02/21/wechat-lishi/">微信红包算法探讨</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>今年过年微信红包成了全民焦点，虽然大多数的红包就一块八角的样子，还是搞得大家乐此不彼地，蛋爷我年三十晚什么都没干就守在手机旁边不是摇手机红包就是抢群红包。作为一名程序猿，自然会想了解下红包的实现细节。我在网上谷歌了下，微信目前是没有公布红包的实现细节的，所以这里就提出一个自己的方案。</p>
+<h2 id="微信红包规则">微信红包规则</h2>
+<p>红包领了不少，据观察红包主要有以下几个限制条件：</p>
+<ol>
+<li>所有人都能分到红包，也就是不会出现红包数值为0的情况。</li>
+<li>所有人的红包数值加起来等于支付的金额。</li>
+<li>红包波动范围比较大，约5%~8%的红包数值在平均值的两倍以上，同时数额0.01出现的概率比较高。</li>
+<li>红包的数值是随机的，并且数值的分布近似于正态分布。</li>
+</ol>
+<p>这里假设红包的总金额为T，红包个数为k，第i个红包的金额为ai，红包金额生成函数为rand(之后会讨论这个函数)。</p>
+<p>因为每个红包的最小值为0.01，所以在初始的时候为每个红包预留0.01元，那么剩余金额总数为<code>T-0.01*k</code>。</p>
+<p>为了让每个红包金额都是随机的，红包将会由系统逐一生成，金额为当前剩余金额范围内的随机数。算法如下：</p>
+<blockquote>
+<p>ai = rand(T - 0.01 * k - a0 - … - ai-1)</p>
+</blockquote>
+<h2 id="正态分布的实现">正态分布的实现</h2>
+<p>由于C++等语言提供的随机函数是平均分布的，因此如果需要使红包金额近似正态分布，需要对平均分布进行<a href="http://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform" target="_blank" rel="external">Box–Muller</a>转换操作，C++实现代码如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="preprocessor">#<span class="keyword">define</span> TWO_PI 6.2831853071795864769252866</span></div><div class="line"><span class="preprocessor">#<span class="keyword">include</span> &lt;cmath&gt;</span></div><div class="line"><span class="preprocessor">#<span class="keyword">include</span> &lt;cstdlib&gt;</span></div><div class="line"><span class="keyword">double</span> generateGaussianNoise(<span class="keyword">const</span> <span class="keyword">double</span> mu, <span class="keyword">const</span> <span class="keyword">double</span> sigma)</div><div class="line">{</div><div class="line">    <span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</div><div class="line">    <span class="keyword">static</span> <span class="keyword">bool</span> haveSpare = <span class="keyword">false</span>;</div><div class="line">    <span class="keyword">static</span> <span class="keyword">double</span> rand1, rand2;</div><div class="line"> </div><div class="line">    <span class="keyword">if</span>(haveSpare)</div><div class="line">    {</div><div class="line">        haveSpare = <span class="keyword">false</span>;</div><div class="line">        <span class="keyword">return</span> (sigma * <span class="built_in">sqrt</span>(rand1) * <span class="built_in">sin</span>(rand2)) + mu;</div><div class="line">    }</div><div class="line"> </div><div class="line">    haveSpare = <span class="keyword">true</span>;</div><div class="line"> </div><div class="line">    rand1 = rand() / ((<span class="keyword">double</span>) RAND_MAX);</div><div class="line">    <span class="keyword">if</span>(rand1 &lt; <span class="number">1e-100</span>) rand1 = <span class="number">1e-100</span>;</div><div class="line">    rand1 = -<span class="number">2</span> * <span class="built_in">log</span>(rand1);</div><div class="line">    rand2 = (rand() / ((<span class="keyword">double</span>) RAND_MAX)) * TWO_PI;</div><div class="line"> </div><div class="line">    <span class="keyword">return</span> (sigma * <span class="built_in">sqrt</span>(rand1) * <span class="built_in">cos</span>(rand2)) + mu;</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>函数<code>generateGaussianNoise</code>的两个参数为期望值mu和标准差sigma，显然，mu的值为当前红包的均值，令分配第i个红包时所剩总金额为Ti，所以：</p>
+<blockquote>
+<p>Ti = T - 0.01 * k - a0 - … - ai-1 </p>
+</blockquote>
+<p>易得：</p>
+<blockquote>
+<p>mu = Ti / (k - i)</p>
+</blockquote>
+<h3 id="sigma的值">sigma的值</h3>
+<p>红包数额的分布并不完全符合正太分布，因为每个红包的数额都有上限和下限，所以准确地说应该是截尾正态分布，在这里红包金额范围为[0, Ti]。</p>
+<p>剩下要做的就是确定sigma的数值，sigma的值会直接影响红包数额的分布曲线。</p>
+<p>根据正态分布的三个sigma定理, 生成的随机数值有95.449974%几率落在(mu-2*sigma,mu+2*sigma)内，为了使得mu-2*sigma = 0，sigma = mu/2。对于生成的随机数落在[0, Ti]以外区间的情况，采用截断处理，统一返回0或者Ti。也就是说，最后生成的随机数值分别有大约6%的几率为0或者大于2*mu，加上保留的0.01，符合条件3列出的情况。最后给出这部分C++的代码：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="preprocessor">#<span class="keyword">include</span> &lt;vector&gt;</span></div><div class="line"><span class="stl_container"><span class="built_in">vector</span>&lt;<span class="keyword">double</span>&gt;</span> generateMoneyVector(<span class="keyword">const</span> <span class="keyword">double</span> mon, <span class="keyword">const</span> <span class="keyword">int</span> pics)</div><div class="line">{</div><div class="line">    <span class="stl_container"><span class="built_in">vector</span>&lt;<span class="keyword">double</span>&gt;</span> valueVec;</div><div class="line">    <span class="keyword">double</span> moneyLeft = mon - pics * <span class="number">0.01</span>;</div><div class="line">    <span class="keyword">double</span> mu, sigma;</div><div class="line">    <span class="keyword">double</span> noiseValue;</div><div class="line"></div><div class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; pics - <span class="number">1</span>; i++)</div><div class="line">    {</div><div class="line">        mu = moneyLeft / (pics - i);</div><div class="line">        sigma = mu / <span class="number">2</span>;</div><div class="line">        noiseValue = generateGaussianNoise(mu, sigma);</div><div class="line">        </div><div class="line">        <span class="keyword">if</span>(noiseValue &lt; <span class="number">0</span>) noiseValue = <span class="number">0</span>;</div><div class="line">        <span class="keyword">if</span>(noiseValue &gt; moneyLeft) noiseValue = moneyLeft;</div><div class="line">        </div><div class="line">        valueVec.push_back(noiseValue + <span class="number">0.01</span>);</div><div class="line">        moneyLeft -= noiseValue;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keyword">return</span> valueVec;</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>对于收到抢红包的请求的时候，只需要进行pop操作并返回即可。</p>
+<h2 id="结语">结语</h2>
+<p>这里还有一些细节没有处理，例如对返回值进行小数位数的处理等，就不做细致说明了。以上只是我对微信红包算法的一种个人猜想，有不足的地方望多指教。</p>
+<h2 id="References">References</h2>
+<ol>
+<li><a href="http://en.wikipedia.org/wiki/Normal_distribution" target="_blank" rel="external">http://en.wikipedia.org/wiki/Normal_distribution</a></li>
+<li><a href="http://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform" target="_blank" rel="external">http://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform</a></li>
+</ol>
+<h3 id="转载请注明">转载请注明</h3>
+<p>原文地址：<a href="http://mafagan.sinaapp.com/2015/02/21/wechat-lishi/" target="_blank" rel="external">http://mafagan.sinaapp.com/2015/02/21/wechat-lishi/</a></p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
 
 
   
@@ -462,7 +548,7 @@
 <div class="widget tagcloud">
   <h3 class="title">标签云</h3>
   <div class="entry">
-    <a href="/tags/C/" style="font-size: 20.00px;">C++</a><a href="/tags/STL/" style="font-size: 20.00px;">STL</a><a href="/tags/algorithm/" style="font-size: 10.00px;">algorithm</a><a href="/tags/article/" style="font-size: 10.00px;">article</a><a href="/tags/buffer/" style="font-size: 10.00px;">buffer</a><a href="/tags/callback/" style="font-size: 10.00px;">callback</a><a href="/tags/iterator/" style="font-size: 10.00px;">iterator</a><a href="/tags/libev/" style="font-size: 10.00px;">libev</a><a href="/tags/libevent/" style="font-size: 10.00px;">libevent</a><a href="/tags/linux/" style="font-size: 10.00px;">linux</a><a href="/tags/mutex/" style="font-size: 20.00px;">mutex</a><a href="/tags/nested-type/" style="font-size: 10.00px;">nested type</a><a href="/tags/nginx/" style="font-size: 20.00px;">nginx</a><a href="/tags/signal/" style="font-size: 10.00px;">signal</a><a href="/tags/udp/" style="font-size: 10.00px;">udp</a><a href="/tags/unix/" style="font-size: 10.00px;">unix</a><a href="/tags/vim/" style="font-size: 10.00px;">vim</a>
+    <a href="/tags/C/" style="font-size: 20.00px;">C++</a><a href="/tags/STL/" style="font-size: 15.00px;">STL</a><a href="/tags/algorithm/" style="font-size: 15.00px;">algorithm</a><a href="/tags/article/" style="font-size: 10.00px;">article</a><a href="/tags/buffer/" style="font-size: 10.00px;">buffer</a><a href="/tags/callback/" style="font-size: 10.00px;">callback</a><a href="/tags/iterator/" style="font-size: 10.00px;">iterator</a><a href="/tags/libev/" style="font-size: 10.00px;">libev</a><a href="/tags/libevent/" style="font-size: 10.00px;">libevent</a><a href="/tags/linux/" style="font-size: 10.00px;">linux</a><a href="/tags/mutex/" style="font-size: 15.00px;">mutex</a><a href="/tags/nested-type/" style="font-size: 10.00px;">nested type</a><a href="/tags/nginx/" style="font-size: 15.00px;">nginx</a><a href="/tags/signal/" style="font-size: 10.00px;">signal</a><a href="/tags/udp/" style="font-size: 10.00px;">udp</a><a href="/tags/unix/" style="font-size: 10.00px;">unix</a><a href="/tags/vim/" style="font-size: 10.00px;">vim</a><a href="/tags/微信/" style="font-size: 10.00px;">微信</a><a href="/tags/红包/" style="font-size: 10.00px;">红包</a>
   </div>
 </div>
 
@@ -471,6 +557,10 @@
 <div class="widget tag">
   <h3 class="title">最新文章</h3>
   <ul class="entry">
+    
+      <li>
+        <a href="/2015/02/21/wechat-lishi/">微信红包算法探讨</a>
+      </li>
     
       <li>
         <a href="/2015/02/17/nested-type/">《STL源码剖析》读书笔记(二)——typename与嵌套依赖类型</a>
@@ -488,10 +578,6 @@
         <a href="/2015/02/05/nginx-mutex-analysis-2/">nginx中的accept-mutex源码分析(二)</a>
       </li>
     
-      <li>
-        <a href="/2015/01/31/nginx-mutex-analysis/">nginx中的accept-mutex源码分析(一)</a>
-      </li>
-    
   </ul>
 </div>
 
@@ -501,11 +587,11 @@
   <h3 class="title">标签</h3>
   <ul class="entry">
   
-    <li><a href="/tags/C/">C++</a><small>2</small></li>
+    <li><a href="/tags/C/">C++</a><small>3</small></li>
   
     <li><a href="/tags/STL/">STL</a><small>2</small></li>
   
-    <li><a href="/tags/algorithm/">algorithm</a><small>1</small></li>
+    <li><a href="/tags/algorithm/">algorithm</a><small>2</small></li>
   
     <li><a href="/tags/article/">article</a><small>1</small></li>
   
@@ -534,6 +620,10 @@
     <li><a href="/tags/unix/">unix</a><small>1</small></li>
   
     <li><a href="/tags/vim/">vim</a><small>1</small></li>
+  
+    <li><a href="/tags/微信/">微信</a><small>1</small></li>
+  
+    <li><a href="/tags/红包/">红包</a><small>1</small></li>
   
   </ul>
 </div>

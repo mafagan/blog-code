@@ -4,7 +4,7 @@
   <subtitle><![CDATA[Collect the dots in your life.]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://mafagan.sinaapp.com/"/>
-  <updated>2015-02-17T10:18:10.615Z</updated>
+  <updated>2015-02-22T16:02:36.579Z</updated>
   <id>http://mafagan.sinaapp.com/</id>
   
   <author>
@@ -13,6 +13,72 @@
   </author>
   
   <generator uri="http://zespia.tw/hexo/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[微信红包算法探讨]]></title>
+    <link href="http://mafagan.sinaapp.com/2015/02/21/wechat-lishi/"/>
+    <id>http://mafagan.sinaapp.com/2015/02/21/wechat-lishi/</id>
+    <published>2015-02-21T08:29:00.000Z</published>
+    <updated>2015-02-22T16:02:33.000Z</updated>
+    <content type="html"><![CDATA[<p>今年过年微信红包成了全民焦点，虽然大多数的红包就一块八角的样子，还是搞得大家乐此不彼地，蛋爷我年三十晚什么都没干就守在手机旁边不是摇手机红包就是抢群红包。作为一名程序猿，自然会想了解下红包的实现细节。我在网上谷歌了下，微信目前是没有公布红包的实现细节的，所以这里就提出一个自己的方案。</p>
+<h2 id="微信红包规则">微信红包规则</h2>
+<p>红包领了不少，据观察红包主要有以下几个限制条件：</p>
+<ol>
+<li>所有人都能分到红包，也就是不会出现红包数值为0的情况。</li>
+<li>所有人的红包数值加起来等于支付的金额。</li>
+<li>红包波动范围比较大，约5%~8%的红包数值在平均值的两倍以上，同时数额0.01出现的概率比较高。</li>
+<li>红包的数值是随机的，并且数值的分布近似于正态分布。</li>
+</ol>
+<p>这里假设红包的总金额为T，红包个数为k，第i个红包的金额为ai，红包金额生成函数为rand(之后会讨论这个函数)。</p>
+<p>因为每个红包的最小值为0.01，所以在初始的时候为每个红包预留0.01元，那么剩余金额总数为<code>T-0.01*k</code>。</p>
+<p>为了让每个红包金额都是随机的，红包将会由系统逐一生成，金额为当前剩余金额范围内的随机数。算法如下：</p>
+<blockquote>
+<p>ai = rand(T - 0.01 * k - a0 - … - ai-1)</p>
+</blockquote>
+<h2 id="正态分布的实现">正态分布的实现</h2>
+<p>由于C++等语言提供的随机函数是平均分布的，因此如果需要使红包金额近似正态分布，需要对平均分布进行<a href="http://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform" target="_blank" rel="external">Box–Muller</a>转换操作，C++实现代码如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="preprocessor">#<span class="keyword">define</span> TWO_PI 6.2831853071795864769252866</span></div><div class="line"><span class="preprocessor">#<span class="keyword">include</span> &lt;cmath&gt;</span></div><div class="line"><span class="preprocessor">#<span class="keyword">include</span> &lt;cstdlib&gt;</span></div><div class="line"><span class="keyword">double</span> generateGaussianNoise(<span class="keyword">const</span> <span class="keyword">double</span> mu, <span class="keyword">const</span> <span class="keyword">double</span> sigma)</div><div class="line">{</div><div class="line">    <span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</div><div class="line">    <span class="keyword">static</span> <span class="keyword">bool</span> haveSpare = <span class="keyword">false</span>;</div><div class="line">    <span class="keyword">static</span> <span class="keyword">double</span> rand1, rand2;</div><div class="line"> </div><div class="line">    <span class="keyword">if</span>(haveSpare)</div><div class="line">    {</div><div class="line">        haveSpare = <span class="keyword">false</span>;</div><div class="line">        <span class="keyword">return</span> (sigma * <span class="built_in">sqrt</span>(rand1) * <span class="built_in">sin</span>(rand2)) + mu;</div><div class="line">    }</div><div class="line"> </div><div class="line">    haveSpare = <span class="keyword">true</span>;</div><div class="line"> </div><div class="line">    rand1 = rand() / ((<span class="keyword">double</span>) RAND_MAX);</div><div class="line">    <span class="keyword">if</span>(rand1 &lt; <span class="number">1e-100</span>) rand1 = <span class="number">1e-100</span>;</div><div class="line">    rand1 = -<span class="number">2</span> * <span class="built_in">log</span>(rand1);</div><div class="line">    rand2 = (rand() / ((<span class="keyword">double</span>) RAND_MAX)) * TWO_PI;</div><div class="line"> </div><div class="line">    <span class="keyword">return</span> (sigma * <span class="built_in">sqrt</span>(rand1) * <span class="built_in">cos</span>(rand2)) + mu;</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>函数<code>generateGaussianNoise</code>的两个参数为期望值mu和标准差sigma，显然，mu的值为当前红包的均值，令分配第i个红包时所剩总金额为Ti，所以：</p>
+<blockquote>
+<p>Ti = T - 0.01 * k - a0 - … - ai-1 </p>
+</blockquote>
+<p>易得：</p>
+<blockquote>
+<p>mu = Ti / (k - i)</p>
+</blockquote>
+<h3 id="sigma的值">sigma的值</h3>
+<p>红包数额的分布并不完全符合正太分布，因为每个红包的数额都有上限和下限，所以准确地说应该是截尾正态分布，在这里红包金额范围为[0, Ti]。</p>
+<p>剩下要做的就是确定sigma的数值，sigma的值会直接影响红包数额的分布曲线。</p>
+<p>根据正态分布的三个sigma定理, 生成的随机数值有95.449974%几率落在(mu-2*sigma,mu+2*sigma)内，为了使得mu-2*sigma = 0，sigma = mu/2。对于生成的随机数落在[0, Ti]以外区间的情况，采用截断处理，统一返回0或者Ti。也就是说，最后生成的随机数值分别有大约6%的几率为0或者大于2*mu，加上保留的0.01，符合条件3列出的情况。最后给出这部分C++的代码：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="preprocessor">#<span class="keyword">include</span> &lt;vector&gt;</span></div><div class="line"><span class="stl_container"><span class="built_in">vector</span>&lt;<span class="keyword">double</span>&gt;</span> generateMoneyVector(<span class="keyword">const</span> <span class="keyword">double</span> mon, <span class="keyword">const</span> <span class="keyword">int</span> pics)</div><div class="line">{</div><div class="line">    <span class="stl_container"><span class="built_in">vector</span>&lt;<span class="keyword">double</span>&gt;</span> valueVec;</div><div class="line">    <span class="keyword">double</span> moneyLeft = mon - pics * <span class="number">0.01</span>;</div><div class="line">    <span class="keyword">double</span> mu, sigma;</div><div class="line">    <span class="keyword">double</span> noiseValue;</div><div class="line"></div><div class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; pics - <span class="number">1</span>; i++)</div><div class="line">    {</div><div class="line">        mu = moneyLeft / (pics - i);</div><div class="line">        sigma = mu / <span class="number">2</span>;</div><div class="line">        noiseValue = generateGaussianNoise(mu, sigma);</div><div class="line">        </div><div class="line">        <span class="keyword">if</span>(noiseValue &lt; <span class="number">0</span>) noiseValue = <span class="number">0</span>;</div><div class="line">        <span class="keyword">if</span>(noiseValue &gt; moneyLeft) noiseValue = moneyLeft;</div><div class="line">        </div><div class="line">        valueVec.push_back(noiseValue + <span class="number">0.01</span>);</div><div class="line">        moneyLeft -= noiseValue;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keyword">return</span> valueVec;</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>对于收到抢红包的请求的时候，只需要进行pop操作并返回即可。</p>
+<h2 id="结语">结语</h2>
+<p>这里还有一些细节没有处理，例如对返回值进行小数位数的处理等，就不做细致说明了。以上只是我对微信红包算法的一种个人猜想，有不足的地方望多指教。</p>
+<h2 id="References">References</h2>
+<ol>
+<li><a href="http://en.wikipedia.org/wiki/Normal_distribution" target="_blank" rel="external">http://en.wikipedia.org/wiki/Normal_distribution</a></li>
+<li><a href="http://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform" target="_blank" rel="external">http://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform</a></li>
+</ol>
+<h3 id="转载请注明">转载请注明</h3>
+<p>原文地址：<a href="http://mafagan.sinaapp.com/2015/02/21/wechat-lishi/" target="_blank" rel="external">http://mafagan.sinaapp.com/2015/02/21/wechat-lishi/</a></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>今年过年微信红包成了全民焦点，虽然大多数的红包就一块八角的样子，还是搞得大家乐此不彼地，蛋爷我年三十晚什么都没干就守在手机旁边不是摇手机红包就是抢群红包。作为一名程序猿，自然会想了解下红包的实现细节。我在网上谷歌了下，微信目前是没有公布红包的实现细节的，所以这里就提出一个自]]>
+    </summary>
+    
+      <category term="微信" scheme="http://mafagan.sinaapp.com/tags/%E5%BE%AE%E4%BF%A1/"/>
+    
+      <category term="红包" scheme="http://mafagan.sinaapp.com/tags/%E7%BA%A2%E5%8C%85/"/>
+    
+      <category term="algorithm" scheme="http://mafagan.sinaapp.com/tags/algorithm/"/>
+    
+      <category term="C++" scheme="http://mafagan.sinaapp.com/tags/C/"/>
+    
+      <category term="coding" scheme="http://mafagan.sinaapp.com/categories/coding/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[《STL源码剖析》读书笔记(二)——typename与嵌套依赖类型]]></title>
@@ -374,7 +440,7 @@
 <p>Right angle brackets &gt; are used for block quotes.<br><a id="more"></a></p>
 <h4 id="Links_and_Email">Links and Email</h4>
 </blockquote>
-<p>An email <a href="&#x6d;&#x61;&#x69;&#108;&#116;&#111;&#58;&#x65;&#120;&#x61;&#x6d;&#x70;&#108;&#x65;&#64;&#x65;&#120;&#97;&#109;&#x70;&#x6c;&#101;&#x2e;&#x63;&#111;&#109;">&#x65;&#120;&#x61;&#x6d;&#x70;&#108;&#x65;&#64;&#x65;&#120;&#97;&#109;&#x70;&#x6c;&#101;&#x2e;&#x63;&#111;&#109;</a> link.</p>
+<p>An email <a href="&#109;&#97;&#x69;&#x6c;&#116;&#x6f;&#x3a;&#101;&#x78;&#x61;&#x6d;&#112;&#x6c;&#101;&#64;&#x65;&#120;&#97;&#x6d;&#112;&#x6c;&#x65;&#46;&#x63;&#111;&#109;">&#101;&#x78;&#x61;&#x6d;&#112;&#x6c;&#101;&#64;&#x65;&#120;&#97;&#x6d;&#112;&#x6c;&#x65;&#46;&#x63;&#111;&#109;</a> link.</p>
 <p>Simple inline link <a href="http://chenluois.com" target="_blank" rel="external">http://chenluois.com</a>, another inline link <a href="http://25.io/smaller/" target="_blank" rel="external">Smaller</a>, one more inline link with title <a href="http://resizesafari.com" title="a Safari extension" target="_blank" rel="external">Resize</a>.</p>
 <p>A <a href="http://25.io/mou/" title="Markdown editor on Mac OS X" target="_blank" rel="external">reference style</a> link. Input id, then anywhere in the doc, define the link with corresponding id:</p>
 <p>Titles ( or called tool tips ) in the links are optional.</p>
