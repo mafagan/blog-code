@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>buffer | 坚强的鸡蛋</title>
+  <title>http | 坚强的鸡蛋</title>
   <meta name="author" content="Huaguan, Ma">
   
   <meta name="description" content="蛋爷的博客，攻城狮的窝，优雅的外在，科学的内心，互联网中的水吧，这里有一只坚强的鸡蛋！">
@@ -58,7 +58,7 @@
 </header>
   <div id="content" class="inner">
     <div id="main-col" class="alignleft"><div id="wrapper">
-<h2 class="archive-title tag">buffer</h2>
+<h2 class="archive-title tag">http</h2>
 
 
   
@@ -68,47 +68,25 @@
     <header>
       
         <div class="icon"></div>
-        <time datetime="2015-02-13T13:37:00.000Z"><a href="/2015/02/13/linux-udp-buffer/">2月 13 2015</a></time>
+        <time datetime="2015-02-27T15:15:00.000Z"><a href="/2015/02/27/cookie-hack/">2月 27 2015</a></time>
       
       
   
-    <h1 class="title"><a href="/2015/02/13/linux-udp-buffer/">linux中udp缓冲区大小的查看与设置</a></h1>
+    <h1 class="title"><a href="/2015/02/27/cookie-hack/">利用cookie劫持微博私信</a></h1>
   
 
     </header>
     <div class="entry">
       
-        <p>鉴于tcp有重传机制，更多的时候udp对收发缓冲区的大小可能更加敏感一点。</p>
-<p>udp缓冲区的大小主要和以下几个值有关：</p>
-<ol>
-<li>/proc/sys/net/core/rmem_max ——— udp缓冲区的最大值，单位字节，下同</li>
-<li>/proc/sys/net/core/rmem_default ———- udp缓冲区的默认值，如果不更改的话程序的udp缓冲区默认值就是这个。</li>
-</ol>
-<p>查看方法可以直接<code>cat</code>以上两个文件进行查看，也可以通过<code>sysctl</code>查看。</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sysctl <span class="operator">-a</span> | grep rmem_max</div></pre></td></tr></table></figure>
-
-<p>其实sysctl信息来源就是<code>proc</code>下的文件。</p>
-<h2 id="更改udp缓冲区大小">更改udp缓冲区大小</h2>
-<h3 id="程序中进行更改">程序中进行更改</h3>
-<p>程序中可以使用setsockopt函数与SO_RCVBUF选项对udp缓冲区的值进行更改，但是要注意不管设置的值有多大，超过rmem_max的部分都会被无视。</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">int a = value_wanted;</div><div class="line"><span class="keyword">if</span> (setsockopt(sockfd, SOL_SOCKET, SO_RCVBUF, &a, sizeof(int)) == -<span class="number">1</span>) {</div><div class="line">    <span class="keyword">...</span></div><div class="line">}</div></pre></td></tr></table></figure>
-
-<h3 id="更改系统值">更改系统值</h3>
-<p>如果确实要把udp缓冲区改到一个比较大的值，那就需要更改rmem_max的值。<br>编辑/etc/rc.local文件添加以下代码可使系统在每次启动的时候自动更改系统缓冲区的最大值。</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">echo value_wanted &gt; /<span class="keyword">proc</span>/sys/net/core/rmem_default</div></pre></td></tr></table></figure>
-
-<p>或者在/etc/sysctl.conf添加以下代码即可在重启后永久生效。</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="attribute">rmem_max</span>=<span class="string">MAX</span></div></pre></td></tr></table></figure>
-
-<p>不想重启的话使用命令<code>sysctl -p</code>即可。</p>
-<p>可以顺便看下setsockopt在linux下的相关实现</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">...</span></div><div class="line"></div><div class="line">case SO_SNDBUF:</div><div class="line">    <span class="keyword">if</span> (val &gt; sysctl_wmem_max)</div><div class="line">        val = sysctl_wmem_max;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> ((val * <span class="number">2</span>) &lt; SOCK_MIN_SNDBUF)</div><div class="line">        sk-&gt;sk_sndbuf = SOCK_MIN_SNDBUF;</div><div class="line">    <span class="keyword">else</span></div><div class="line">        sk-&gt;sk_sndbuf = val * <span class="number">2</span>; //当然缓冲区在系统中的实际值要大一点，因为udp报头以及IP报头等都是需要空间的。</div><div class="line"><span class="keyword">...</span></div></pre></td></tr></table></figure>
-
-
+        <p>记得还是在学Qt编程的时候，做过一个练手项目，产品是一个搜索Chrome的cookie内容的小软件。Chrome的cookie保存在用户目录的一个sqlite文件中，具体路径上网搜一下就知道了。当时比较天真，想看看cookie里面有没有明文保存的密码，结果当然是得到一堆乱码，最后就不了了之了。<br>
       
     </div>
     <footer>
       
+        
+          <div class="alignleft">
+            <a href="/2015/02/27/cookie-hack/#more" class="more-link">阅读全文</a>
+          </div>
         
         
       
