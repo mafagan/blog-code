@@ -12,16 +12,16 @@ date: 2015-02-27 23:15
 记得还是在学Qt编程的时候，做过一个练手项目，产品是一个搜索Chrome的cookie内容的小软件。Chrome的cookie保存在用户目录的一个sqlite文件中，具体路径上网搜一下就知道了。当时比较天真，想看看cookie里面有没有明文保存的密码，结果当然是得到一堆乱码，最后就不了了之了。
 <!-- more --> 
 直到前几天，我正在网上看一篇关于cookie的文章，忽然想起一件事情，我需要密码的原因无非是用来登录，我既然有了cookie直接发给服务器就可以了，又有什么必要了解cookie的内容？我顺手用chrome打开了微博私信查看下它的请求流程：
-![cookie-request-flow](http://thumbsnap.com/s/mwkbI50J.png)
+![cookie-request-flow](http://ccxcu.img43.wal8.com/img43/507748_20150118041318/142511824063.png)
 
 
 貌似理论上没有什么问题，不过还是要做个试验验证一下，我准备尝试用python写个小程序模拟浏览器向微博服务器发起私信消息的页面请求。
 
 当然首先还是让我的小伙伴给我发条私信：
-![cookie-message](http://thumbsnap.com/i/Gtlt6d5Y.png)
+![cookie-message](http://ccxcu.img43.wal8.com/img43/507748_20150118041318/142511824132.png)
 ##具体实现
 整个实验我简单的作了个概念图：
-![cookie-flow](http://thumbsnap.com/i/2nneEq3T.png)
+![cookie-flow](http://ccxcu.img43.wal8.com/img43/507748_20150118041318/142511824183.png)
 
 实验主要分为以下几个步骤：
  * 从chrome的sqlite文件中提取cookie
@@ -30,9 +30,9 @@ date: 2015-02-27 23:15
 
 ###提取chrome的cookie信息
 chrome的cookie保存路径在三大操作系统Windows、Linux和OSX上都不尽相同，以linux为例，它的保存路径就是`～/.config/chromium/Default/Cookies`，我们先用sqlite3程序把这个文件载入进来看看：
-![cookie-tables](http://thumbsnap.com/i/uN4qraCk.png)
+![cookie-tables](http://ccxcu.img43.wal8.com/img43/507748_20150118041318/14251182423.png)
 cookie信息都保存在表`cookies`中，但是才刚开始就出现了意想不到的问题：
-![cookie-values-problem](http://thumbsnap.com/i/KjNIWNZF.png)
+![cookie-values-problem](http://ccxcu.img43.wal8.com/img43/507748_20150118041318/142511824283.png)
 
 表里面的值和记忆中的大部分都是一样的，唯独最重要的value一项，居然是空的，而在末尾倒是多了个`encrypted_value`項。谷歌了一下，了解到在chrome版本33之前，cookie都是直接存储的，在33+之后，谷歌开始对cookie的信息进行了加密。顺便感慨下时光飞逝，不知不觉又老了几个版本。chrome在windows上加密采用的是CryptUnprotectData函数，解密方法大家可以看[这里](http://www.ftium4.com/chrome-cookies-encrypted-value-python.html)。Linux和OSX上的加密方法相似，都采用的是AES(CBC)加密方法，了解密码学的都知道对这个数据进行解密至少需要好几个值，salt，key length，iv，password，iterations等等。不过不幸的是一位国外的网友n8henrie在浏览了chromium源码之后把这些值统统找到了，以下是他原话：
  
@@ -122,8 +122,8 @@ print decrypt(res[len(res)-1])
 ```
 
 结果显示n8henrie给出的值确实是正确的，解密成功。
-![cookie-value-chrome](http://thumbsnap.com/i/CjKIZd6R.png)
-![cookie-chomre](http://thumbsnap.com/i/ZwerOWIt.png)
+![cookie-value-chrome](http://ccxcu.img43.wal8.com/img43/507748_20150118041318/142511824335.png)
+![cookie-chomre](http://ccxcu.img43.wal8.com/img43/507748_20150118041318/142511824386.png)
 
 这个值我们不知道有什么意义，因为本来就不需要，直接把它发给服务器就好，服务器自己知道怎么解密的。
 
@@ -161,7 +161,7 @@ request = urllib2.Request(url, headers=header)
 ```
 ###发送请求
 最后一步发送请求，把返回的数据打开看一下，私信消息已经在里面了。
-![cookie-msg-decode](http://thumbsnap.com/i/RhdHDij2.png)
+![cookie-msg-decode](http://ccxcu.img43.wal8.com/img43/507748_20150118041318/142511824443.png)
 
 ##结语
 没想到整个过程还算是比较顺利的，而且还是在linux平台。随后我又在windows和OSX上进行了试验，windows的解密要更简单一点，而在OSX上获取`Chrome Safe Storage`的`password`的时候系统提醒需要获取授权，也就是说从目前来看只有苹果系挡住了这次攻击。不得不说cookie确实给我们带来了太多的便利，但是与此同时也牺牲了太多的安全性，网络发展到今天很多事情已经超出可控的范围，尤其是在中国这种软件氛围，谁知道各大软件产商有什么做不出来的，想要保护好自己，只能靠自己平时多长点心眼了。
