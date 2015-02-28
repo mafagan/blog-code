@@ -4,7 +4,7 @@
   <subtitle><![CDATA[Collect the dots in your life.]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://danye.me/"/>
-  <updated>2015-02-27T16:54:05.184Z</updated>
+  <updated>2015-02-28T06:31:23.256Z</updated>
   <id>http://danye.me/</id>
   
   <author>
@@ -15,13 +15,13 @@
   <generator uri="http://zespia.tw/hexo/">Hexo</generator>
   
   <entry>
-    <title><![CDATA[利用cookie劫持微博私信]]></title>
+    <title><![CDATA[利用cookie查看微博私信]]></title>
     <link href="http://danye.me/2015/02/27/cookie-hack/"/>
     <id>http://danye.me/2015/02/27/cookie-hack/</id>
     <published>2015-02-27T15:15:00.000Z</published>
-    <updated>2015-02-27T16:53:11.000Z</updated>
-    <content type="html"><![CDATA[<p>记得还是在学Qt编程的时候，做过一个练手项目，产品是一个搜索Chrome的cookie内容的小软件。Chrome的cookie保存在用户目录的一个sqlite文件中，具体路径上网搜一下就知道了。当时比较天真，想看看cookie里面有没有明文保存的密码，结果当然是得到一堆乱码，最后就不了了之了。<br><a id="more"></a><br>直到前几天，我正在网上看一篇关于cookie的文章的时候，忽然想起一件事情，我需要密码的原因无非是用来登录，我既然有了cookie直接发给服务器就可以了，又有什么必要了解cookie的内容？我顺手用chrome打开了微博私信查看下它的请求流程：<br><img src="http://thumbsnap.com/s/mwkbI50J.png" alt="cookie-request-flow"></p>
-<p>貌似理论上没有什么障碍了，不过还是要做个试验验证一下，我准备尝试用python写个小程序模拟浏览器向微博服务器发起私信消息的页面请求。</p>
+    <updated>2015-02-28T06:31:14.000Z</updated>
+    <content type="html"><![CDATA[<p>记得还是在学Qt编程的时候，做过一个练手项目，产品是一个搜索Chrome的cookie内容的小软件。Chrome的cookie保存在用户目录的一个sqlite文件中，具体路径上网搜一下就知道了。当时比较天真，想看看cookie里面有没有明文保存的密码，结果当然是得到一堆乱码，最后就不了了之了。<br><a id="more"></a><br>直到前几天，我正在网上看一篇关于cookie的文章，忽然想起一件事情，我需要密码的原因无非是用来登录，我既然有了cookie直接发给服务器就可以了，又有什么必要了解cookie的内容？我顺手用chrome打开了微博私信查看下它的请求流程：<br><img src="http://thumbsnap.com/s/mwkbI50J.png" alt="cookie-request-flow"></p>
+<p>貌似理论上没有什么问题，不过还是要做个试验验证一下，我准备尝试用python写个小程序模拟浏览器向微博服务器发起私信消息的页面请求。</p>
 <p>当然首先还是让我的小伙伴给我发条私信：<br><img src="http://thumbsnap.com/i/Gtlt6d5Y.png" alt="cookie-message"></p>
 <h2 id="具体实现">具体实现</h2>
 <p>整个实验我简单的作了个概念图：<br><img src="http://thumbsnap.com/i/2nneEq3T.png" alt="cookie-flow"></p>
