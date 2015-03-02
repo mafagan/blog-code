@@ -3,9 +3,9 @@
   <title><![CDATA[坚强的鸡蛋]]></title>
   <subtitle><![CDATA[Collect the dots in your life.]]></subtitle>
   <link href="/atom.xml" rel="self"/>
-  <link href="http://danye.me/"/>
-  <updated>2015-02-28T10:31:08.187Z</updated>
-  <id>http://danye.me/</id>
+  <link href="http://mafagan.sinaapp.com/"/>
+  <updated>2015-03-01T04:57:36.610Z</updated>
+  <id>http://mafagan.sinaapp.com/</id>
   
   <author>
     <name><![CDATA[Huaguan, Ma]]></name>
@@ -16,10 +16,10 @@
   
   <entry>
     <title><![CDATA[利用cookie查看微博私信]]></title>
-    <link href="http://danye.me/2015/02/27/cookie-hack/"/>
-    <id>http://danye.me/2015/02/27/cookie-hack/</id>
+    <link href="http://mafagan.sinaapp.com/2015/02/27/cookie-hack/"/>
+    <id>http://mafagan.sinaapp.com/2015/02/27/cookie-hack/</id>
     <published>2015-02-27T15:15:00.000Z</published>
-    <updated>2015-02-28T10:30:56.000Z</updated>
+    <updated>2015-02-28T14:07:56.000Z</updated>
     <content type="html"><![CDATA[<p>记得还是在学Qt编程的时候，做过一个练手项目，产品是一个搜索Chrome的cookie内容的小软件。Chrome的cookie保存在用户目录的一个sqlite文件中，具体路径上网搜一下就知道了。当时比较天真，想看看cookie里面有没有明文保存的密码，结果当然是得到一堆乱码，最后就不了了之了。<br><a id="more"></a><br>直到前几天，我正在网上看一篇关于cookie的文章，忽然想起一件事情，我需要密码的原因无非是用来登录，我既然有了cookie直接发给服务器就可以了，又有什么必要了解cookie的内容？我顺手用chrome打开了微博私信查看下它的请求流程：<br><img src="http://ccxcu.img43.wal8.com/img43/507748_20150118041318/142511824063.png" alt="cookie-request-flow"></p>
 <p>貌似理论上没有什么问题，不过还是要做个试验验证一下，我准备尝试用python写个小程序模拟浏览器向微博服务器发起私信消息的页面请求。</p>
 <p>当然首先还是让我的小伙伴给我发条私信：<br><img src="http://ccxcu.img43.wal8.com/img43/507748_20150118041318/142511824132.png" alt="cookie-message"></p>
@@ -86,26 +86,26 @@
     
     </summary>
     
-      <category term="http" scheme="http://danye.me/tags/http/"/>
+      <category term="http" scheme="http://mafagan.sinaapp.com/tags/http/"/>
     
-      <category term="cookie" scheme="http://danye.me/tags/cookie/"/>
+      <category term="cookie" scheme="http://mafagan.sinaapp.com/tags/cookie/"/>
     
-      <category term="python" scheme="http://danye.me/tags/python/"/>
+      <category term="python" scheme="http://mafagan.sinaapp.com/tags/python/"/>
     
-      <category term="aes" scheme="http://danye.me/tags/aes/"/>
+      <category term="aes" scheme="http://mafagan.sinaapp.com/tags/aes/"/>
     
-      <category term="chrome" scheme="http://danye.me/tags/chrome/"/>
+      <category term="chrome" scheme="http://mafagan.sinaapp.com/tags/chrome/"/>
     
-      <category term="coding" scheme="http://danye.me/categories/coding/"/>
+      <category term="coding" scheme="http://mafagan.sinaapp.com/categories/coding/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[微信红包算法探讨]]></title>
-    <link href="http://danye.me/2015/02/21/wechat-lishi/"/>
-    <id>http://danye.me/2015/02/21/wechat-lishi/</id>
+    <link href="http://mafagan.sinaapp.com/2015/02/21/wechat-lishi/"/>
+    <id>http://mafagan.sinaapp.com/2015/02/21/wechat-lishi/</id>
     <published>2015-02-21T08:29:00.000Z</published>
-    <updated>2015-02-26T07:01:30.000Z</updated>
+    <updated>2015-02-22T16:02:33.000Z</updated>
     <content type="html"><![CDATA[<p>今年过年微信红包成了全民焦点，虽然大多数的红包就一块八角的样子，还是搞得大家乐此不彼地，蛋爷我年三十晚什么都没干就守在手机旁边不是摇手机红包就是抢群红包。作为一名程序猿，自然会想了解下红包的实现细节。我在网上谷歌了下，微信目前是没有公布红包的实现细节的，所以这里就提出一个自己的方案。</p>
 <h2 id="微信红包规则">微信红包规则</h2>
 <p>红包领了不少，据观察红包主要有以下几个限制条件：</p>
@@ -154,24 +154,24 @@
     <![CDATA[<p>今年过年微信红包成了全民焦点，虽然大多数的红包就一块八角的样子，还是搞得大家乐此不彼地，蛋爷我年三十晚什么都没干就守在手机旁边不是摇手机红包就是抢群红包。作为一名程序猿，自然会想了解下红包的实现细节。我在网上谷歌了下，微信目前是没有公布红包的实现细节的，所以这里就提出一个自]]>
     </summary>
     
-      <category term="微信" scheme="http://danye.me/tags/%E5%BE%AE%E4%BF%A1/"/>
+      <category term="微信" scheme="http://mafagan.sinaapp.com/tags/%E5%BE%AE%E4%BF%A1/"/>
     
-      <category term="红包" scheme="http://danye.me/tags/%E7%BA%A2%E5%8C%85/"/>
+      <category term="红包" scheme="http://mafagan.sinaapp.com/tags/%E7%BA%A2%E5%8C%85/"/>
     
-      <category term="algorithm" scheme="http://danye.me/tags/algorithm/"/>
+      <category term="algorithm" scheme="http://mafagan.sinaapp.com/tags/algorithm/"/>
     
-      <category term="C++" scheme="http://danye.me/tags/C/"/>
+      <category term="C++" scheme="http://mafagan.sinaapp.com/tags/C/"/>
     
-      <category term="coding" scheme="http://danye.me/categories/coding/"/>
+      <category term="coding" scheme="http://mafagan.sinaapp.com/categories/coding/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[《STL源码剖析》读书笔记(二)——typename与嵌套依赖类型]]></title>
-    <link href="http://danye.me/2015/02/17/nested-type/"/>
-    <id>http://danye.me/2015/02/17/nested-type/</id>
+    <link href="http://mafagan.sinaapp.com/2015/02/17/nested-type/"/>
+    <id>http://mafagan.sinaapp.com/2015/02/17/nested-type/</id>
     <published>2015-02-16T16:56:00.000Z</published>
-    <updated>2015-02-26T07:01:30.000Z</updated>
+    <updated>2015-02-17T10:18:02.000Z</updated>
     <content type="html"><![CDATA[<p>在C++泛型编程中，template中的参数主要有两种声明方法，一种是typename，另一种是class。在这种情况下，typename和class是没有区别的，也就是说是使用typename还是class可以根据自己的喜好选择。</p>
 <h2 id="typename在嵌套类型中的使用">typename在嵌套类型中的使用</h2>
 <p>typename在template中的作用可能是最为大家所熟知的，但是反倒是typename最主要的作用大家(其实就是我，不然也不会有这篇笔记啦。。)用得比较少，先看一下下面这段代码</p>
@@ -189,22 +189,22 @@
 <h2 id="typename]]>
     </summary>
     
-      <category term="C++" scheme="http://danye.me/tags/C/"/>
+      <category term="C++" scheme="http://mafagan.sinaapp.com/tags/C/"/>
     
-      <category term="STL" scheme="http://danye.me/tags/STL/"/>
+      <category term="STL" scheme="http://mafagan.sinaapp.com/tags/STL/"/>
     
-      <category term="nested type" scheme="http://danye.me/tags/nested-type/"/>
+      <category term="nested type" scheme="http://mafagan.sinaapp.com/tags/nested-type/"/>
     
-      <category term="coding" scheme="http://danye.me/categories/coding/"/>
+      <category term="coding" scheme="http://mafagan.sinaapp.com/categories/coding/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[《STL源码剖析》读书笔记(一)——迭代器的相应类型]]></title>
-    <link href="http://danye.me/2015/02/16/associated-types/"/>
-    <id>http://danye.me/2015/02/16/associated-types/</id>
+    <link href="http://mafagan.sinaapp.com/2015/02/16/associated-types/"/>
+    <id>http://mafagan.sinaapp.com/2015/02/16/associated-types/</id>
     <published>2015-02-16T10:53:00.000Z</published>
-    <updated>2015-02-26T07:01:30.000Z</updated>
+    <updated>2015-02-16T11:29:29.000Z</updated>
     <content type="html"><![CDATA[<p>迭代器是一种智能指针，主要完成的工作无非就是提取它所指向的内容和成员的访问。</p>
 <h2 id="迭代器的相应类型(台译作『型别』)">迭代器的相应类型(台译作『型别』)</h2>
 <p>问题：现在有一个迭代器，在算法的实现中需要获取它的相应类型，也就是迭代器所指向对象的类型，应该怎么做？</p>
@@ -219,22 +219,22 @@
 <p>问题：现在有一个迭代器，在算法的实现中需要获取它的相应类型，也就是迭代器所指向对象]]>
     </summary>
     
-      <category term="C++" scheme="http://danye.me/tags/C/"/>
+      <category term="C++" scheme="http://mafagan.sinaapp.com/tags/C/"/>
     
-      <category term="STL" scheme="http://danye.me/tags/STL/"/>
+      <category term="STL" scheme="http://mafagan.sinaapp.com/tags/STL/"/>
     
-      <category term="iterator" scheme="http://danye.me/tags/iterator/"/>
+      <category term="iterator" scheme="http://mafagan.sinaapp.com/tags/iterator/"/>
     
-      <category term="coding" scheme="http://danye.me/categories/coding/"/>
+      <category term="coding" scheme="http://mafagan.sinaapp.com/categories/coding/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[linux中udp缓冲区大小的查看与设置]]></title>
-    <link href="http://danye.me/2015/02/13/linux-udp-buffer/"/>
-    <id>http://danye.me/2015/02/13/linux-udp-buffer/</id>
+    <link href="http://mafagan.sinaapp.com/2015/02/13/linux-udp-buffer/"/>
+    <id>http://mafagan.sinaapp.com/2015/02/13/linux-udp-buffer/</id>
     <published>2015-02-13T13:37:00.000Z</published>
-    <updated>2015-02-26T07:01:30.000Z</updated>
+    <updated>2015-02-13T16:46:14.000Z</updated>
     <content type="html"><![CDATA[<p>鉴于tcp有重传机制，更多的时候udp对收发缓冲区的大小可能更加敏感一点。</p>
 <p>udp缓冲区的大小主要和以下几个值有关：</p>
 <ol>
@@ -270,22 +270,22 @@
 <l]]>
     </summary>
     
-      <category term="linux" scheme="http://danye.me/tags/linux/"/>
+      <category term="linux" scheme="http://mafagan.sinaapp.com/tags/linux/"/>
     
-      <category term="udp" scheme="http://danye.me/tags/udp/"/>
+      <category term="udp" scheme="http://mafagan.sinaapp.com/tags/udp/"/>
     
-      <category term="buffer" scheme="http://danye.me/tags/buffer/"/>
+      <category term="buffer" scheme="http://mafagan.sinaapp.com/tags/buffer/"/>
     
-      <category term="coding" scheme="http://danye.me/categories/coding/"/>
+      <category term="coding" scheme="http://mafagan.sinaapp.com/categories/coding/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[nginx中的accept-mutex源码分析(二)]]></title>
-    <link href="http://danye.me/2015/02/05/nginx-mutex-analysis-2/"/>
-    <id>http://danye.me/2015/02/05/nginx-mutex-analysis-2/</id>
+    <link href="http://mafagan.sinaapp.com/2015/02/05/nginx-mutex-analysis-2/"/>
+    <id>http://mafagan.sinaapp.com/2015/02/05/nginx-mutex-analysis-2/</id>
     <published>2015-02-05T14:24:00.000Z</published>
-    <updated>2015-02-26T07:01:30.000Z</updated>
+    <updated>2015-02-10T11:59:46.000Z</updated>
     <content type="html"><![CDATA[<p>在上篇文章里我们了解了nginx使用accept-mutex解决『惊群』问题的方法，其实在nginx的架构中，accept-mutex还起到了另外一个作用，负载均衡。</p>
 <h3 id="worker_process的负载均衡">worker process的负载均衡</h3>
 <p>在nginx抢夺accept-mutex之前有一个判断条件</p>
@@ -306,22 +306,22 @@
 <h3 id="worker_process的负载均衡">worker process的负载均衡<]]>
     </summary>
     
-      <category term="nginx" scheme="http://danye.me/tags/nginx/"/>
+      <category term="nginx" scheme="http://mafagan.sinaapp.com/tags/nginx/"/>
     
-      <category term="mutex" scheme="http://danye.me/tags/mutex/"/>
+      <category term="mutex" scheme="http://mafagan.sinaapp.com/tags/mutex/"/>
     
-      <category term="algorithm" scheme="http://danye.me/tags/algorithm/"/>
+      <category term="algorithm" scheme="http://mafagan.sinaapp.com/tags/algorithm/"/>
     
-      <category term="coding" scheme="http://danye.me/categories/coding/"/>
+      <category term="coding" scheme="http://mafagan.sinaapp.com/categories/coding/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[nginx中的accept-mutex源码分析(一)]]></title>
-    <link href="http://danye.me/2015/01/31/nginx-mutex-analysis/"/>
-    <id>http://danye.me/2015/01/31/nginx-mutex-analysis/</id>
+    <link href="http://mafagan.sinaapp.com/2015/01/31/nginx-mutex-analysis/"/>
+    <id>http://mafagan.sinaapp.com/2015/01/31/nginx-mutex-analysis/</id>
     <published>2015-01-31T06:26:00.000Z</published>
-    <updated>2015-02-26T07:26:59.000Z</updated>
+    <updated>2015-02-03T04:04:33.000Z</updated>
     <content type="html"><![CDATA[<p>最近的项目遇到了些麻烦，于是就到各家项目的源码里东逛逛西逛逛，看看有没有什么值得借鉴(chao)的东西，一来二去总算是找(chao)到了一些有用的东西，同时还无意间了解了下nginx的源码结构，其中nginx对于accept的处理倒是让我有种别开生面的赶脚(菜鸟本质暴露了…)，所以这里就写下来做个小小的记录。<br><a id="more"></a></p>
 <h3 id="nginx架构">nginx架构</h3>
 <p>nginx是典型的多进程模式，其中一个是master进程，其它是worker进程，顾名思义，master就是负责管理的，管理各个worker进程，worker进程自然就是干活的，具体点就是处理数据、处理请求的。</p>
@@ -345,20 +345,20 @@
     
     </summary>
     
-      <category term="nginx" scheme="http://danye.me/tags/nginx/"/>
+      <category term="nginx" scheme="http://mafagan.sinaapp.com/tags/nginx/"/>
     
-      <category term="mutex" scheme="http://danye.me/tags/mutex/"/>
+      <category term="mutex" scheme="http://mafagan.sinaapp.com/tags/mutex/"/>
     
-      <category term="coding" scheme="http://danye.me/categories/coding/"/>
+      <category term="coding" scheme="http://mafagan.sinaapp.com/categories/coding/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[libev回调函数的参数传递问题]]></title>
-    <link href="http://danye.me/2015/01/15/libevargs/"/>
-    <id>http://danye.me/2015/01/15/libevargs/</id>
+    <link href="http://mafagan.sinaapp.com/2015/01/15/libevargs/"/>
+    <id>http://mafagan.sinaapp.com/2015/01/15/libevargs/</id>
     <published>2015-01-15T10:29:00.000Z</published>
-    <updated>2015-02-26T07:01:30.000Z</updated>
+    <updated>2015-02-03T04:04:33.000Z</updated>
     <content type="html"><![CDATA[<p>libev是一个类似于libevent的事件驱动型的网络库，之前用它来做项目的时候对它由很高的期望，谁知一上手就遇到了挺无语的问题，先来看下libev的官方示例：<br><a id="more"></a></p>
 <h3 id="Libev调用示例">Libev调用示例</h3>
 <p>首先定义一个I/O变量：</p>
@@ -407,18 +407,18 @@
     
     </summary>
     
-      <category term="libev" scheme="http://danye.me/tags/libev/"/>
+      <category term="libev" scheme="http://mafagan.sinaapp.com/tags/libev/"/>
     
-      <category term="callback" scheme="http://danye.me/tags/callback/"/>
+      <category term="callback" scheme="http://mafagan.sinaapp.com/tags/callback/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[小丑的蝙蝠侠——YouCompleteMe]]></title>
-    <link href="http://danye.me/2015/01/06/youcompleteme/"/>
-    <id>http://danye.me/2015/01/06/youcompleteme/</id>
+    <link href="http://mafagan.sinaapp.com/2015/01/06/youcompleteme/"/>
+    <id>http://mafagan.sinaapp.com/2015/01/06/youcompleteme/</id>
     <published>2015-01-06T07:36:00.000Z</published>
-    <updated>2015-02-26T07:01:30.000Z</updated>
+    <updated>2015-02-03T04:04:33.000Z</updated>
     <content type="html"><![CDATA[<p>YouCompleteMe(以下简称YCM), 目前vim上最优秀的补全插件。</p>
 <h3 id="简介">简介</h3>
 <p>vim上有很多补全插件，像ctags, cscope, neocomplete等。这些插件或多或少我都用过，总体感觉就是在瞎XX猜。相比之下，YCM与这些插件有着本质的区别，它基于语法分析，补全精准快速，即使是在百兆源码文件中使用也不会有显著的的效率下降，支持C家族全系语言，亲测还支持python、js等，可以说很大程度上解决了vim补全上的问题。<br><a id="more"></a><br>YCM由谷歌工程师Strahinja Val Markovic开发,使用的是C/S架构，在vim启动的时候服务端就会自动运行，正常情况下是感受不到YCM的存在的。YCM的语义分析使用的是clang(就是mac上的默认编译器)，C端使用C++开发，据说是为了提高效率，再由python进行封装，是不是觉得有点晕菜？没关系，其实你只要记住YCM很好用就行了。附一张效果图，btw，YCM还有补全路径、跳转到定义声明这些貌似不太起眼但是非常实用的功能，用起来感觉各种惊喜。<br><img src="http://ccxcu.img43.wal8.com/img43/507748_20150118041318/142245596241.gif" alt="ycm-demo"></p>
@@ -459,18 +459,18 @@
     
     </summary>
     
-      <category term="vim" scheme="http://danye.me/tags/vim/"/>
+      <category term="vim" scheme="http://mafagan.sinaapp.com/tags/vim/"/>
     
-      <category term="coding" scheme="http://danye.me/categories/coding/"/>
+      <category term="coding" scheme="http://mafagan.sinaapp.com/categories/coding/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[Libevent源码框架分析]]></title>
-    <link href="http://danye.me/2014/12/26/libevent%E6%BA%90%E7%A0%81%E6%A1%86%E6%9E%B6%E5%88%86%E6%9E%90/"/>
-    <id>http://danye.me/2014/12/26/libevent源码框架分析/</id>
+    <link href="http://mafagan.sinaapp.com/2014/12/26/libevent%E6%BA%90%E7%A0%81%E6%A1%86%E6%9E%B6%E5%88%86%E6%9E%90/"/>
+    <id>http://mafagan.sinaapp.com/2014/12/26/libevent源码框架分析/</id>
     <published>2014-12-26T02:25:00.000Z</published>
-    <updated>2015-02-26T07:01:30.000Z</updated>
+    <updated>2015-02-03T04:04:33.000Z</updated>
     <content type="html"><![CDATA[<p>libevent是一个事件触发(<strong>Reactor</strong>)的网络库，适用于windows、linux、bsd等多种平台，内部使用select、epoll、kqueue等系统调用管理事件机制。与其它网络库相比，libevent最大的特点就是很好的整合了I/O、timer以及signal的处理。之前我曾经在实习项目中用到过libevent，由于当时对整个libevent的运行方式不太熟悉，导致设计程序框架的时候多了很多不必要的考虑和编码，所以就在这里对libevent的核心部分进行一次剖析。<br><a id="more"></a></p>
 <h2 id="libevent的使用">libevent的使用</h2>
 <p>对于libevent来说，I/O, timer以及signal都是一个event，其内部已经封装好了对这些事件的处理，因此用户调用的时候只需要注册关心的事件以及事件的处理函数(即回调函数),然后等待事件的即可。问题的关键是libevent是怎么整合这些事件的？下面我来解释一下。</p>
@@ -497,22 +497,22 @@
     
     </summary>
     
-      <category term="libevent" scheme="http://danye.me/tags/libevent/"/>
+      <category term="libevent" scheme="http://mafagan.sinaapp.com/tags/libevent/"/>
     
-      <category term="unix" scheme="http://danye.me/tags/unix/"/>
+      <category term="unix" scheme="http://mafagan.sinaapp.com/tags/unix/"/>
     
-      <category term="signal" scheme="http://danye.me/tags/signal/"/>
+      <category term="signal" scheme="http://mafagan.sinaapp.com/tags/signal/"/>
     
-      <category term="coding" scheme="http://danye.me/categories/coding/"/>
+      <category term="coding" scheme="http://mafagan.sinaapp.com/categories/coding/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[Article test]]></title>
-    <link href="http://danye.me/2014/12/24/article/"/>
-    <id>http://danye.me/2014/12/24/article/</id>
+    <link href="http://mafagan.sinaapp.com/2014/12/24/article/"/>
+    <id>http://mafagan.sinaapp.com/2014/12/24/article/</id>
     <published>2014-12-24T11:38:00.000Z</published>
-    <updated>2015-02-26T07:01:30.000Z</updated>
+    <updated>2015-02-03T04:04:33.000Z</updated>
     <content type="html"><![CDATA[<h1 id="Mou">Mou</h1>
 <h2 id="Overview">Overview</h2>
 <p><strong>Mou</strong>, the missing Markdown editor for <em>web developers</em>.</p>
@@ -526,7 +526,7 @@
 <p>Right angle brackets &gt; are used for block quotes.<br><a id="more"></a></p>
 <h4 id="Links_and_Email">Links and Email</h4>
 </blockquote>
-<p>An email <a href="&#109;&#97;&#x69;&#108;&#116;&#x6f;&#x3a;&#101;&#120;&#x61;&#x6d;&#112;&#108;&#x65;&#64;&#101;&#x78;&#97;&#x6d;&#x70;&#108;&#101;&#46;&#x63;&#x6f;&#109;">&#101;&#120;&#x61;&#x6d;&#112;&#108;&#x65;&#64;&#101;&#x78;&#97;&#x6d;&#x70;&#108;&#101;&#46;&#x63;&#x6f;&#109;</a> link.</p>
+<p>An email <a href="&#109;&#97;&#x69;&#x6c;&#116;&#x6f;&#x3a;&#101;&#x78;&#x61;&#x6d;&#112;&#x6c;&#101;&#64;&#x65;&#120;&#97;&#x6d;&#112;&#x6c;&#x65;&#46;&#x63;&#111;&#109;">&#101;&#x78;&#x61;&#x6d;&#112;&#x6c;&#101;&#64;&#x65;&#120;&#97;&#x6d;&#112;&#x6c;&#x65;&#46;&#x63;&#111;&#109;</a> link.</p>
 <p>Simple inline link <a href="http://chenluois.com" target="_blank" rel="external">http://chenluois.com</a>, another inline link <a href="http://25.io/smaller/" target="_blank" rel="external">Smaller</a>, one more inline link with title <a href="http://resizesafari.com" title="a Safari extension" target="_blank" rel="external">Resize</a>.</p>
 <p>A <a href="http://25.io/mou/" title="Markdown editor on Mac OS X" target="_blank" rel="external">reference style</a> link. Input id, then anywhere in the doc, define the link with corresponding id:</p>
 <p>Titles ( or called tool tips ) in the links are optional.</p>
@@ -742,9 +742,9 @@ var Mou = exactlyTheAppIwant;
     
     </summary>
     
-      <category term="article" scheme="http://danye.me/tags/article/"/>
+      <category term="article" scheme="http://mafagan.sinaapp.com/tags/article/"/>
     
-      <category term="article" scheme="http://danye.me/categories/article/"/>
+      <category term="article" scheme="http://mafagan.sinaapp.com/categories/article/"/>
     
   </entry>
   
