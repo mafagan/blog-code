@@ -13,6 +13,7 @@ udp缓冲区的大小主要和以下几个值有关：
 2. /proc/sys/net/core/rmem_default ------- udp缓冲区的默认值，如果不更改的话程序的udp缓冲区默认值就是这个。
 
 查看方法可以直接`cat`以上两个文件进行查看，也可以通过`sysctl`查看。
+<!-- more -->
 ```
 sysctl -a | grep rmem_max
 ```
