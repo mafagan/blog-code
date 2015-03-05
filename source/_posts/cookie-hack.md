@@ -1,4 +1,4 @@
-title: 利用cookie查看微博私信 
+title: 利用cookie劫持微博私信 
 tags: 
 - http
 - cookie
