@@ -90,7 +90,7 @@ vector<double> generateMoneyVector(const double mon, const int pics)
     return valueVec;
 }
 ```
-对于收到抢红包的请求的时候，只需要进行pop操作并返回即可。
+剩下的就是具体工程上实现的部分了。
 ##结语
 这里还有一些细节没有处理，例如对返回值进行小数位数的处理等，就不做细致说明了。以上只是我对微信红包算法的一种个人猜想，有不足的地方望多指教。
 ##References
