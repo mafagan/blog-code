@@ -12,11 +12,11 @@ date: 2015-03-15 14:26
 ##pthread cpu affinity
 线程中设置cpu亲和性的api和变量主要有以下几个：
 
-* cpu_set_t cpu的掩码集合
-* CPU_ZERO() cpu掩码清零
-* CPU_SET() 设置cpu掩码
-* pthread_setaffinity_np() 设置线程亲和性，成功返回0。
-* pthread_getaffinity_np() 查看亲和性设置结果，成功返回0。
+* cpu_set_t： cpu的掩码集合
+* CPU_ZERO： cpu掩码清零
+* CPU_SET： 设置cpu掩码
+* pthread_setaffinity_np： 设置线程亲和性，成功返回0。
+* pthread_getaffinity_np： 查看亲和性设置结果，成功返回0。
 
 注：这些api仅在FreeBSD和linux下可用，且在使用前须在所有头文件的前面定义宏`_GNU_SOURCE`。
 
@@ -24,13 +24,15 @@ date: 2015-03-15 14:26
 
 经过多次的测试，两组数据相当接近，差距基本在误差范围内，不过设置了cpu亲和性的一组线程消耗的时间总是要多一点。
 
-需要查看代码的童鞋可以点[这里]()。
+需要查看代码的童鞋可以点[这里](https://github.com/mafagan/blog-code/blob/master/code/thread_cpu.c)。
 
 ##nginx的cpu affinity测试
 既然自己的测试结果不太给力，那还是拿nginx来测吧。我是用的是nginx的默认配置文件，只是对worker
 process的数量还有worker_cpu_affinity配置项进行了改动，然后用apache的ab程序来进行请求测试:
 
-`ab -n 50000 -c 500 http://10.211.55.4/`
+```
+ab -n 50000 -c 500 http://10.211.55.4/
+```
 
 测试的结果总体上和我写得程序的测试结果相近，两组配置程序的表现差距都在误差范围内，但是数值上设置了cpu亲和性的一组总是要偏低。
 

@@ -1,4 +1,4 @@
-title: Libevent源码框架分析
+title: Libevent源码分析
 tags: [libevent, unix, signal, ]  
 date: 2014-12-26 10:25
 category: coding
